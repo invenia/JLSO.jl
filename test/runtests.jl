@@ -1,5 +1,6 @@
 using Checkpoints
-using Base.Test
+using Compat.Test
 
-# Write your own tests here.
-@test 1 == 1
+@testset "Checkpoints" begin
+    include("JSO.jl")
+end
