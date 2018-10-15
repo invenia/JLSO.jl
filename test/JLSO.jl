@@ -1,6 +1,9 @@
 using Compat
 using Compat.Test
 using Compat.Dates
+using Compat.Distributed
+using Compat.InteractiveUtils
+using Compat.Serialization
 using Checkpoints
 using Checkpoints.JLSO: JLSOFile, LOGGER
 using Memento
@@ -81,6 +84,8 @@ using TimeZones
                 # We need to do this separately because there appears to be a race
                 # condition on AxisArrays being loaded.
                 f = @spawnat pnum begin
+                    @eval Main using Compat
+                    @eval Main using Compat.Serialization
                     @eval Main using AxisArrays
                 end
 
@@ -105,7 +110,12 @@ using TimeZones
 
                 # Test failing to deserailize data because of missing modules will
                 # still return the raw bytes
-                result = @test_warn(LOGGER, r"UndefVarError*", jlso["data"])
+                result = if VERSION < v"0.7.0"
+                    @test_warn(LOGGER, r"UndefVarError*", jlso["data"])
+                else
+                    @test_warn(LOGGER, r"KeyError*", jlso["data"])
+                end
+
                 @test result == bytes
             finally
                 rmprocs(pnum)

@@ -33,6 +33,8 @@ using AWSCore
 using AWSS3
 using BSON
 using Compat
+using Compat.InteractiveUtils
+using Compat.Serialization
 using Memento
 using Mocking
 
@@ -66,12 +68,13 @@ function JLSOFile(
 )
     _versioncheck(format)
 
-    objects = map(data) do t
-        varname, vardata = t
+    objects = Dict{String, Vector{UInt8}}()
+
+    for (key, val) in data
         io = IOBuffer()
-        serialize(io, vardata)
-        return varname => take!(io)
-    end |> Dict
+        serialize(io, val)
+        objects[key] = take!(io)
+    end
 
     return JLSOFile(format, image, julia, sysinfo, objects)
 end
@@ -133,7 +136,13 @@ end
 #######################################
 function _versioninfo()
     if isempty(_CACHE[:VERSIONINFO])
-        global _CACHE[:VERSIONINFO] = sprint(versioninfo, true)
+        global _CACHE[:VERSIONINFO] = if VERSION < v"0.7.0"
+            sprint(versioninfo, true)
+        else
+            io = IOBuffer()
+            versioninfo(io; verbose=true)
+            String(take!(io))
+        end
     end
 
     return _CACHE[:VERSIONINFO]
