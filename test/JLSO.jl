@@ -52,7 +52,7 @@ using TimeZones
         jlso = JLSOFile(datas["String"])
         expected = string(
             "JLSOFile([data]; version=v\"1.0.0\", julia=v\"$VERSION\", ",
-            "format=:bson, image=\"\")"
+            "format=:serialize, image=\"\")"
         )
         @test sprint(show, jlso; context=:compact => true) == expected
         @test sprint(show, jlso) == sprint(print, jlso)
