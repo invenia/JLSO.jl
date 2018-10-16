@@ -79,7 +79,7 @@ Stores the information needed to write a .jlso file.
 - `image=""` - The docker image URI that was used to generate the file
 - `julia=$VERSION` - The julia version used to write the file
 - `version=v"1.0"` - The file schema version
-- `format=:bson` - The format to use for serializing individual objects. While `:bson` is
+- `format=:serialize` - The format to use for serializing individual objects. While `:bson` is
     recommended for longer term object storage, `:serialize` tends to be the faster choice
     for adhoc serialization.
 """
@@ -87,7 +87,7 @@ function JLSOFile(
     data::Dict{String, <:Any};
     version=v"1.0",
     julia=VERSION,
-    format=:bson,
+    format=:serialize,
     image=_image(),
 )
     _versioncheck(version)
