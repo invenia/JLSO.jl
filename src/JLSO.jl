@@ -11,10 +11,14 @@ Example)
 ```
 Dict(
     "metadata" => Dict(
-        "format" => v"1.0",
-        "image" => "xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/myrepository:latest"
+        "version" => v"1.0",
         "julia" => v"0.6.4",
-        "sysinfo" => "Julia Version 0.6.4 ...",
+        "format" => :bson,  # Could also be :serialize
+        "image" => "xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/myrepository:latest"
+        "pkgs" => Dict(
+            "AxisArrays" => v"0.2.1",
+            ...
+        )
     ),
     "objects" => Dict(
         "var1" => [0x35, 0x10, 0x01, 0x04, 0x44],
@@ -33,61 +37,109 @@ using AWSCore
 using AWSS3
 using BSON
 using Compat
-using Compat.InteractiveUtils
+using Compat.Pkg
 using Compat.Serialization
 using Memento
 using Mocking
 
 using Compat.Serialization
+using Compat: Nothing
 
 const LOGGER = getlogger(@__MODULE__)
 const VALID_VERSIONS = (v"1.0", v"2.0")
 
 # Cache of the versioninfo and image, so we don't compute these every time.
-const _CACHE = Dict{Symbol, String}(
-    :VERSIONINFO => "",
+const _CACHE = Dict(
+    :PKGS => Dict{String, VersionNumber}(),
     :IMAGE => "",
 )
 
 __init__() = Memento.register(LOGGER)
 
 struct JLSOFile
-    format::VersionNumber
-    image::String
+    version::VersionNumber
     julia::VersionNumber
-    sysinfo::String
+    format::Symbol
+    image::String
+    pkgs::Dict{String, VersionNumber}
     objects::Dict{String, Vector{UInt8}}
 end
 
+"""
+    JLSOFile(data; image="", julia=$VERSION, version=v"1.0, format=:serialize)
+
+Stores the information needed to write a .jlso file.
+
+# Arguments
+
+- `data` - The objects to be stored in the file.
+
+# Keywords
+
+- `image=""` - The docker image URI that was used to generate the file
+- `julia=$VERSION` - The julia version used to write the file
+- `version=v"1.0"` - The file schema version
+- `format=:bson` - The format to use for serializing individual objects. While `:bson` is
+    recommended for longer term object storage, `:serialize` tends to be the faster choice
+    for adhoc serialization.
+"""
 function JLSOFile(
     data::Dict{String, <:Any};
-    image=_image(),
+    version=v"1.0",
     julia=VERSION,
-    sysinfo=_versioninfo(),
-    format=v"1.0"
+    format=:bson,
+    image=_image(),
 )
-    _versioncheck(format)
+    _versioncheck(version)
 
     objects = Dict{String, Vector{UInt8}}()
 
     for (key, val) in data
         io = IOBuffer()
-        serialize(io, val)
+
+        if format === :bson
+            bson(io, Dict(key => val))
+        elseif format === :serialize
+            serialize(io, val)
+        else
+            error(LOGGER, ArgumentError("Unsupported format $format"))
+        end
+
         objects[key] = take!(io)
     end
 
-    return JLSOFile(format, image, julia, sysinfo, objects)
+    return JLSOFile(version, julia, format, image, _pkgs(), objects)
 end
 
-JLSOFile(data) = JLSOFile(Dict("data" => data))
-JLSOFile(data::Pair...) = JLSOFile(Dict(data...))
+JLSOFile(data; kwargs...) = JLSOFile(Dict("data" => data); kwargs...)
+JLSOFile(data::Pair...; kwargs...) = JLSOFile(Dict(data...); kwargs...)
+
+function Base.show(io::IO, jlso::JLSOFile)
+    if get(io, :compat, false)
+        print(io, jlso)
+    else
+        variables = join(names(jlso), ", ")
+        kwargs = join(
+            [
+                "version=v\"$(jlso.version)\"",
+                "julia=v\"$(jlso.julia)\"",
+                "format=:$(jlso.format)",
+                "image=\"$(jlso.image)\"",
+            ],
+            ", "
+        )
+
+        print(io, "JLSOFile([$variables]; $kwargs)")
+    end
+end
 
 function Base.:(==)(a::JLSOFile, b::JLSOFile)
     return (
-        a.format == b.format &&
+        a.version == b.version &&
         a.julia == b.julia &&
         a.image == b.image &&
-        a.sysinfo == b.sysinfo &&
+        a.pkgs == b.pkgs &&
+        a.format == b.format &&
         a.objects == b.objects
     )
 end
@@ -97,10 +149,11 @@ function Base.write(io::IO, jlso::JLSOFile)
         io,
         Dict(
             "metadata" => Dict(
+                "version" => jlso.version,
+                "julia" => jlso.julia,
                 "format" => jlso.format,
                 "image" => jlso.image,
-                "julia" => jlso.julia,
-                "sysinfo" => jlso.sysinfo,
+                "pkgs" => jlso.pkgs,
             ),
             "objects" => jlso.objects,
         )
@@ -110,42 +163,86 @@ end
 function Base.read(io::IO, ::Type{JLSOFile})
     d = BSON.load(io)
     return JLSOFile(
+        d["metadata"]["version"],
+        d["metadata"]["julia"],
         d["metadata"]["format"],
         d["metadata"]["image"],
-        d["metadata"]["julia"],
-        d["metadata"]["sysinfo"],
+        d["metadata"]["pkgs"],
         d["objects"],
     )
 end
 
+Base.names(jlso::JLSOFile) = collect(keys(jlso.objects))
+
+# TODO: Include a more detail summary method for displaying version information.
+
+"""
+    getindex(jlso, name)
+
+Returns the deserialized object with the specified name.
+"""
 function Base.getindex(jlso::JLSOFile, name::String)
     try
-        return deserialize(IOBuffer(jlso.objects[name]))
+        if jlso.format === :bson
+            BSON.load(IOBuffer(jlso.objects[name]))[name]
+        elseif jlso.format === :serialize
+            deserialize(IOBuffer(jlso.objects[name]))
+        else
+            error(LOGGER, ArgumentError("Unsupported format $(jlso.format)"))
+        end
     catch e
         warn(LOGGER, e)
         return jlso.objects[name]
     end
 end
 
-# save(io::IO, data) = write(io, JLSOFile(data))
-# load(io::IO, data) = read(io, JLSOFile(data))
+"""
+    save(io, data)
+    save(path, data)
+
+Creates a JLSOFile with the specified data and kwargs and writes it back to the io.
+"""
+save(io::IO, data; kwargs...) = write(io, JLSOFile(data; kwargs...))
+save(io::IO, data::Pair...; kwargs...) = save(io, Dict(data...); kwargs...)
+save(path::String, args...; kwargs...) = open(io -> save(io, args...; kwargs...), path, "w")
+
+"""
+    load(io, objects...) -> Dict{String, Any}
+    load(path, objects...) -> Dict{String, Any}
+
+Load the JLSOFile from the io and deserialize the specified objects.
+If no object names are specified then all objects in the file are returned.
+"""
+load(path::String, args...) = open(io -> load(io, args...), path)
+function load(io::IO, objects::String...)
+    jlso = read(io, JLSOFile)
+    objects = isempty(objects) ? names(jlso) : objects
+    result = Dict{String, Any}()
+
+    for o in objects
+        result[o] = jlso[o]
+    end
+
+    return result
+end
+
+
 
 #######################################
 # Functions for lazily evaluating the #
 # VERSIONINFO and IMAGE at runtime    #
 #######################################
-function _versioninfo()
-    if isempty(_CACHE[:VERSIONINFO])
-        global _CACHE[:VERSIONINFO] = if VERSION < v"0.7.0"
-            sprint(versioninfo, true)
-        else
-            io = IOBuffer()
-            versioninfo(io; verbose=true)
-            String(take!(io))
+function _pkgs()
+    if isempty(_CACHE[:PKGS])
+        for (pkg, ver) in Pkg.installed()
+            # BSON can't handle Void types
+            if ver !== nothing
+                global _CACHE[:PKGS][pkg] = ver
+            end
         end
     end
 
-    return _CACHE[:VERSIONINFO]
+    return _CACHE[:PKGS]
 end
 
 function _image()
