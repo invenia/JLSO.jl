@@ -24,32 +24,29 @@ end
 @testset "Checkpoints" begin
     include("JLSO.jl")
 
-    include("testmod.jl")
+    include("testpkg.jl")
 
     x = reshape(collect(1:100), 10, 10)
     y = reshape(collect(101:200), 10, 10)
+    a = collect(1:10)
 
     @testset "Local saver" begin
         mktempdir() do path
-            Checkpoints.config(Checkpoints.saver(path), "TestModule.foo")
+            Checkpoints.config(Checkpoints.saver(path), "TestPkg.foo")
 
-            TestModule.foo(x, y)
+            TestPkg.foo(x, y)
 
-            mod_path = joinpath(path, "TestModule")
+            mod_path = joinpath(path, "TestPkg")
             @test isdir(mod_path)
 
-            foo_path = joinpath(path, "TestModule", "foo")
-            bar_path = joinpath(path, "TestModule", "bar")
-            @test isdir(foo_path)
-            @test !isdir(bar_path)
+            foo_path = joinpath(path, "TestPkg", "foo.jlso")
+            bar_path = joinpath(path, "TestPkg", "bar.jlso")
+            @test isfile(foo_path)
+            @test !isfile(bar_path)
 
-            x_path = joinpath(path, "TestModule", "foo", "x.jlso")
-            y_path = joinpath(path, "TestModule", "foo", "y.jlso")
-            @test isfile(x_path)
-            @test isfile(y_path)
-
-            @test JLSO.load(x_path)["data"] == x
-            @test JLSO.load(y_path)["data"] == y
+            data = JLSO.load(foo_path)
+            @test data["x"] == x
+            @test data["y"] == y
         end
     end
 
@@ -63,19 +60,13 @@ end
         config = AWSCore.aws_config()
         bucket = "mybucket"
         prefix = joinpath("mybackrun", string(DateTime(2017, 1, 1, 8, 50, 32)))
-        Checkpoints.config(
-            Checkpoints.saver(config, bucket, prefix),
-            "TestModule.foo"
-        )
+        Checkpoints.config(Checkpoints.saver(config, bucket, prefix), "TestPkg.bar")
 
         apply(s3_put_patch) do
-            TestModule.foo(x, y)
+            TestPkg.bar(a)
 
-            io = IOBuffer(objects[joinpath(bucket, prefix, "TestModule/foo/x.jlso")])
-            @test JLSO.load(io)["data"] == x
-
-            io = IOBuffer(objects[joinpath(bucket, prefix, "TestModule/foo/y.jlso")])
-            @test JLSO.load(io)["data"] == y
+            io = IOBuffer(objects[joinpath(bucket, prefix, "TestPkg/bar.jlso")])
+            @test JLSO.load(io)["data"] == a
         end
     end
 end
