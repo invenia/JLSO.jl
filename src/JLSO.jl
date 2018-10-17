@@ -35,6 +35,7 @@ module JLSO
 
 using AWSCore
 using AWSS3
+using AWSSDK.Batch: describe_jobs
 using BSON
 using Compat
 using Compat.Pkg

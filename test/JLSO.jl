@@ -1,4 +1,5 @@
 using BSON
+using AWSSDK.Batch: describe_jobs
 using Compat
 using Compat.Test
 using Compat.Dates
@@ -15,6 +16,10 @@ using DataFrames
 using Distributions
 using Nullables  # Needed for loading BSON encoded ZonedDateTimes on 1.0
 using TimeZones
+
+const DESCRIBE_JOBS_RESP = Dict(
+    "jobs" => [Dict("container" => Dict("image" => "busybox"))]
+)
 
 @testset "JLSO" begin
     # Serialize "Hello World!" on julia 0.5.2 (not supported)
@@ -38,6 +43,18 @@ using TimeZones
     )
 
     @testset "JLSOFile" begin
+        patch = @patch describe_jobs(args...) = DESCRIBE_JOBS_RESP
+
+        withenv("AWS_BATCH_JOB_ID" => 1) do
+            apply(patch) do
+                jlso = JLSOFile("I'm a batch job.")
+                @test jlso.image == "busybox"
+            end
+        end
+
+        # Reset the cached image for future tests
+        JLSO._CACHE[:IMAGE] = ""
+
         @testset "$fmt - $k" for fmt in (:bson, :serialize), (k, v) in datas
             jlso = JLSOFile(k => v; format=fmt)
             io = IOBuffer()
