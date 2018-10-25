@@ -5,6 +5,7 @@ using Compat.Test
 using Compat.Dates
 using Compat.Distributed
 using Compat.InteractiveUtils
+using Compat.Random
 using Compat.Serialization
 using Checkpoints
 using Checkpoints.JLSO: JLSOFile, LOGGER
