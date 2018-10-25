@@ -46,6 +46,8 @@ using Mocking
 using Compat.Serialization
 using Compat: Nothing
 
+export JLSOFile
+
 const LOGGER = getlogger(@__MODULE__)
 const VALID_VERSIONS = (v"1.0", v"2.0")
 
@@ -94,22 +96,13 @@ function JLSOFile(
     _versioncheck(version)
 
     objects = Dict{String, Vector{UInt8}}()
+    jlso = JLSOFile(version, julia, format, image, _pkgs(), objects)
 
     for (key, val) in data
-        io = IOBuffer()
-
-        if format === :bson
-            bson(io, Dict(key => val))
-        elseif format === :serialize
-            serialize(io, val)
-        else
-            error(LOGGER, ArgumentError("Unsupported format $format"))
-        end
-
-        objects[key] = take!(io)
+        jlso[key] = val
     end
 
-    return JLSOFile(version, julia, format, image, _pkgs(), objects)
+    return jlso
 end
 
 JLSOFile(data; kwargs...) = JLSOFile(Dict("data" => data); kwargs...)
@@ -195,6 +188,25 @@ function Base.getindex(jlso::JLSOFile, name::String)
         warn(LOGGER, e)
         return jlso.objects[name]
     end
+end
+
+"""
+    setindex!(jlso, value, name)
+
+Adds the object to the file and serializes it.
+"""
+function Base.setindex!(jlso::JLSOFile, value, name::String)
+    io = IOBuffer()
+
+    if jlso.format === :bson
+        bson(io, Dict(name => value))
+    elseif jlso.format === :serialize
+        serialize(io, value)
+    else
+        error(LOGGER, ArgumentError("Unsupported format $(jlso.format)"))
+    end
+
+    jlso.objects[name] = take!(io)
 end
 
 """
