@@ -1,16 +1,5 @@
-using BSON
 using AWSSDK.Batch: describe_jobs
-using Compat
-using Compat.Test
-using Compat.Dates
-using Compat.Distributed
-using Compat.InteractiveUtils
-using Compat.Random
-using Compat.Serialization
-using Checkpoints
-using Checkpoints.JLSO: JLSOFile, LOGGER
-using Memento
-using Memento.Test
+using JLSO: JLSOFile, LOGGER
 
 # To test different types from common external packages
 using DataFrames
@@ -26,12 +15,20 @@ const DESCRIBE_JOBS_RESP = Dict(
     # Serialize "Hello World!" on julia 0.5.2 (not supported)
     img = JLSO._image()
     pkgs = JLSO._pkgs()
-    hw_5 = UInt8[0x26, 0x15, 0x87, 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x21]
+    hw_5 = UInt8[
+        0x26, 0x15, 0x87, 0x48, 0x65,
+        0x6c, 0x6c, 0x6f, 0x20, 0x57,
+        0x6f, 0x72, 0x6c, 0x64, 0x21
+    ]
 
     datas = Dict(
         "String" => "Hello World!",
         "Vector" => [0.867244, 0.711437, 0.512452, 0.863122, 0.907903],
-        "Matrix" => [0.400348 0.892196 0.848164; 0.0183529 0.755449 0.397538; 0.870458 0.0441878 0.170899],
+        "Matrix" => [
+            0.400348 0.892196 0.848164;
+            0.0183529 0.755449 0.397538;
+            0.870458 0.0441878 0.170899
+        ],
         "DateTime" => DateTime(2018, 1, 28),
         "ZonedDateTime" => ZonedDateTime(2018, 1, 28, tz"America/Chicago"),
         "DataFrame" => DataFrame(
@@ -141,7 +138,9 @@ const DESCRIBE_JOBS_RESP = Dict(
                     io = fetch(f)
                     bytes = take!(io)
 
-                    jlso = JLSOFile(v"1.0", VERSION, :serialize, img, pkgs, Dict("data" => bytes))
+                    jlso = JLSOFile(
+                        v"1.0", VERSION, :serialize, img, pkgs, Dict("data" => bytes)
+                    )
 
                     # Test failing to deserailize data because of missing modules will
                     # still return the raw bytes
@@ -173,7 +172,9 @@ const DESCRIBE_JOBS_RESP = Dict(
                     io = fetch(f)
                     bytes = take!(io)
 
-                    jlso = JLSOFile(v"1.0", VERSION, :bson, img, pkgs, Dict("data" => bytes))
+                    jlso = JLSOFile(
+                        v"1.0", VERSION, :bson, img, pkgs, Dict("data" => bytes)
+                    )
 
                     # Test failing to deserailize data because of missing modules will
                     # still return the raw bytes
