@@ -113,8 +113,7 @@ const DESCRIBE_JOBS_RESP = Dict(
                 # We need to do this separately because there appears to be a race
                 # condition on AxisArrays being loaded.
                 f = @spawnat pnum begin
-                    @eval Main using Compat
-                    @eval Main using Compat.Serialization
+                    @eval Main using Serialization
                     @eval Main using BSON
                     @eval Main using AxisArrays
                 end
