@@ -43,7 +43,7 @@ using Memento
 using Mocking
 
 using Compat.Serialization
-using Compat: Nothing
+using Compat: @__MODULE__, Nothing
 
 export JLSOFile
 
@@ -282,4 +282,4 @@ function _versioncheck(version::VersionNumber)
     ))
 end
 
-end
+end  # module
