@@ -54,7 +54,7 @@ deps = ["LinearAlgebra", "Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 
 [[JLSO]]
-deps = ["BSON", "Memento", "Nullables", "Pkg", "Serialization"]
+deps = ["BSON", "Memento", "Pkg", "Serialization"]
 path = ".."
 uuid = "4246fa30-dcab-577b-b33f-ad05273a43fb"
 version = "0.0.0"
