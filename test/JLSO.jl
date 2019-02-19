@@ -55,6 +55,14 @@ using TimeZones
         end
     end
 
+    @testset "unknown format" begin
+        @test_throws(
+            LOGGER,
+            ArgumentError,
+            JLSOFile("String" => "Hello World!", format=:unknown)
+        )
+    end
+
     @testset "show" begin
         jlso = JLSOFile(datas["String"])
         expected = string(
