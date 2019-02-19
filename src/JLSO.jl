@@ -36,14 +36,10 @@ module JLSO
 using AWSCore
 using AWSSDK.Batch: describe_jobs
 using BSON
-using Compat
-using Compat.Pkg
-using Compat.Serialization
+using Serialization
 using Memento
 using Mocking
-
-using Compat.Serialization
-using Compat: @__MODULE__, Nothing
+using Pkg
 
 export JLSOFile
 

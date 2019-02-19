@@ -1,0 +1,6 @@
+.DS_Store
+# Documenter generated files
+/docs/build/
+/docs/site/
+
+/Manifest.toml

@@ -2,11 +2,9 @@ using Documenter, JLSO
 
 makedocs(
     modules=[JLSO],
-    format=:html,
+    format=Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true"),
     pages=[
         "Home" => "index.md",
-        "Usage" => "usage.md",
-        "API" => "api.md",
     ],
     repo="https://github.com/invenia/JLSO.jl/blob/{commit}{path}#L{line}",
     sitename="JLSO.jl",
@@ -16,4 +14,8 @@ makedocs(
     ],
     strict = true,
     checkdocs = :none,
+)
+
+deploydocs(;
+    repo="github.com/invenia/JLSO.jl",
 )

@@ -1,0 +1,6 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+JLSO = "4246fa30-dcab-577b-b33f-ad05273a43fb"
+
+[compat]
+Documenter = "~0.21"
