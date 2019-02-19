@@ -37,7 +37,7 @@ using TimeZones
 
     @testset "JLSOFile" begin
 
-        withenv("AWS_BATCH_JOB_IMAGE" => "busybox") do
+        withenv("JLSO_IMAGE" => "busybox") do
             jlso = JLSOFile("I'm a batch job.")
             @test jlso.image == "busybox"
         end

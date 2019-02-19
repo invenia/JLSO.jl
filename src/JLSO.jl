@@ -251,8 +251,8 @@ function _pkgs()
 end
 
 function _image()
-    if isempty(_CACHE[:IMAGE]) && haskey(ENV, "AWS_BATCH_JOB_IMAGE")
-        return ENV["AWS_BATCH_JOB_IMAGE"]
+    if isempty(_CACHE[:IMAGE]) && haskey(ENV, "JLSO_IMAGE")
+        return ENV["JLSO_IMAGE"]
     end
 
     return _CACHE[:IMAGE]
