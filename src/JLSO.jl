@@ -33,12 +33,9 @@ reconstruction.
 """
 module JLSO
 
-using AWSCore
-using AWSSDK.Batch: describe_jobs
 using BSON
 using Serialization
 using Memento
-using Mocking
 using Pkg
 
 export JLSOFile
@@ -254,15 +251,8 @@ function _pkgs()
 end
 
 function _image()
-    if isempty(_CACHE[:IMAGE]) && haskey(ENV, "AWS_BATCH_JOB_ID")
-        job_id = ENV["AWS_BATCH_JOB_ID"]
-        response = @mock describe_jobs(Dict("jobs" => [job_id]))
-
-        if length(response["jobs"]) > 0
-            global _CACHE[:IMAGE] = first(response["jobs"])["container"]["image"]
-        else
-            warn(LOGGER, "No jobs found with id: $job_id.")
-        end
+    if isempty(_CACHE[:IMAGE]) && haskey(ENV, "AWS_BATCH_JOB_IMAGE")
+        return ENV["AWS_BATCH_JOB_IMAGE"]
     end
 
     return _CACHE[:IMAGE]

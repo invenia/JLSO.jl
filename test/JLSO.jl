@@ -1,4 +1,3 @@
-using AWSSDK.Batch: describe_jobs
 using JLSO: JLSOFile, LOGGER
 
 # To test different types from common external packages
@@ -6,10 +5,6 @@ using DataFrames
 using Distributions
 using Nullables  # Needed for loading BSON encoded ZonedDateTimes on 1.0
 using TimeZones
-
-const DESCRIBE_JOBS_RESP = Dict(
-    "jobs" => [Dict("container" => Dict("image" => "busybox"))]
-)
 
 @testset "JLSO" begin
     # Serialize "Hello World!" on julia 0.5.2 (not supported)
@@ -41,13 +36,10 @@ const DESCRIBE_JOBS_RESP = Dict(
     )
 
     @testset "JLSOFile" begin
-        patch = @patch describe_jobs(args...) = DESCRIBE_JOBS_RESP
 
-        withenv("AWS_BATCH_JOB_ID" => 1) do
-            apply(patch) do
-                jlso = JLSOFile("I'm a batch job.")
-                @test jlso.image == "busybox"
-            end
+        withenv("AWS_BATCH_JOB_IMAGE" => "busybox") do
+            jlso = JLSOFile("I'm a batch job.")
+            @test jlso.image == "busybox"
         end
 
         # Reset the cached image for future tests

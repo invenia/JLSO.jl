@@ -4,20 +4,14 @@ license = "MIT"
 authors = ["Rory Finnegan <rory.finnegan@invenia.ca>"]
 
 [deps]
-AWSCore = "4f1ea46c-232b-54a6-9b17-cc2d0f3e6598"
-AWSSDK = "0d499d91-6ae5-5d63-9313-12987b87d5ad"
 BSON = "fbb218c0-5317-5bc6-957e-2ee96dd4b1f0"
 Memento = "f28f55f0-a522-5efc-85c2-fe41dfb9b2d9"
-Mocking = "78c3b35d-d492-501b-9361-3d52fe80e533"
 Nullables = "4d1e1d77-625e-5b40-9113-a560ec7a8ecd"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 Serialization = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 
 [compat]
-AWSCore = "0.5.5"
-AWSSDK = "0.4.0"
 Memento = "0.10.0"
-Mocking = "0.5.2"
 julia = "0.7, 1.0"
 
 [extras]
