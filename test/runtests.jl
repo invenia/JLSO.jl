@@ -10,7 +10,6 @@ using Serialization
 using Test
 using JLSO
 using Memento
-using Memento.Test
 
 @testset "JLSO.jl" begin
     include("JLSO.jl")
