@@ -135,12 +135,7 @@ using TimeZones
 
                     # Test failing to deserailize data because of missing modules will
                     # still return the raw bytes
-                    result = if VERSION < v"0.7.0"
-                        @test_warn(LOGGER, r"UndefVarError*", jlso["data"])
-                    else
-                        @test_warn(LOGGER, r"KeyError*", jlso["data"])
-                    end
-
+                    result = @test_warn(LOGGER, r"KeyError*", jlso["data"])
                     @test result == bytes
                 end
 
