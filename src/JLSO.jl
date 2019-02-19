@@ -41,9 +41,6 @@ using Memento
 using Mocking
 using Pkg
 
-using Compat.Serialization
-using Compat: @__MODULE__, Nothing
-
 export JLSOFile
 
 const LOGGER = getlogger(@__MODULE__)
