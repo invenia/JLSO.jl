@@ -7,5 +7,5 @@
 [![Codecov](https://codecov.io/gh/invenia/JLSO.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/invenia/JLSO.jl)
 
 JLSO wraps other formats (currently [BSON](https://github.com/MikeInnes/BSON.jl)),
-while storing key metadata suchs as the version of julia and all involved packages
+while storing key metadata such as the version of julia and all involved packages
 that were used in creating the file.
