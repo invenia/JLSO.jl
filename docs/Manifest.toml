@@ -90,7 +90,7 @@ uuid = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
 version = "1.1.1"
 
 [[JLSO]]
-deps = ["AWSCore", "AWSSDK", "BSON", "Compat", "Memento", "Mocking", "Nullables", "Pkg", "Serialization"]
+deps = ["AWSCore", "AWSSDK", "BSON", "Memento", "Mocking", "Nullables", "Pkg", "Serialization"]
 path = ".."
 uuid = "4246fa30-dcab-577b-b33f-ad05273a43fb"
 version = "0.0.0"
