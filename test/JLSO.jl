@@ -69,7 +69,6 @@ using TimeZones
             "JLSOFile([data]; version=v\"1.0.0\", julia=v\"$VERSION\", ",
             "format=:serialize, image=\"\")"
         )
-        @test sprint(show, jlso; context=:compact => true) == expected
         @test sprint(show, jlso) == sprint(print, jlso)
     end
 
@@ -97,7 +96,7 @@ using TimeZones
             jlso = JLSOFile(v"1.0", VERSION, :serialize, img, pkgs, Dict("data" => hw_5))
 
             # Test failing to deserialize data because of incompatible julia versions
-            # will will return the raw bytes
+            # will return the raw bytes
             result = @test_warn(LOGGER, r"MethodError*", jlso["data"])
             @test result == hw_5
 

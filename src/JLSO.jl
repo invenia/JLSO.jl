@@ -101,22 +101,18 @@ JLSOFile(data; kwargs...) = JLSOFile(Dict("data" => data); kwargs...)
 JLSOFile(data::Pair...; kwargs...) = JLSOFile(Dict(data...); kwargs...)
 
 function Base.show(io::IO, jlso::JLSOFile)
-    if get(io, :compat, false)
-        print(io, jlso)
-    else
-        variables = join(names(jlso), ", ")
-        kwargs = join(
-            [
-                "version=v\"$(jlso.version)\"",
-                "julia=v\"$(jlso.julia)\"",
-                "format=:$(jlso.format)",
-                "image=\"$(jlso.image)\"",
-            ],
-            ", "
-        )
+    variables = join(names(jlso), ", ")
+    kwargs = join(
+        [
+            "version=v\"$(jlso.version)\"",
+            "julia=v\"$(jlso.julia)\"",
+            "format=:$(jlso.format)",
+            "image=\"$(jlso.image)\"",
+        ],
+        ", "
+    )
 
-        print(io, "JLSOFile([$variables]; $kwargs)")
-    end
+    print(io, "JLSOFile([$variables]; $kwargs)")
 end
 
 function Base.:(==)(a::JLSOFile, b::JLSOFile)
