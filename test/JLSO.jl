@@ -38,7 +38,7 @@ using TimeZones
     @testset "JLSOFile" begin
 
         withenv("JLSO_IMAGE" => "busybox") do
-            jlso = JLSOFile("I'm a batch job.")
+            jlso = JLSOFile("the image env variable is set")
             @test jlso.image == "busybox"
         end
 
