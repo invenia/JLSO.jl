@@ -1,4 +1,3 @@
-using AWSSDK.Batch: describe_jobs
 using JLSO: JLSOFile, LOGGER
 
 # To test different types from common external packages
@@ -6,10 +5,6 @@ using DataFrames
 using Distributions
 using Nullables  # Needed for loading BSON encoded ZonedDateTimes on 1.0
 using TimeZones
-
-const DESCRIBE_JOBS_RESP = Dict(
-    "jobs" => [Dict("container" => Dict("image" => "busybox"))]
-)
 
 @testset "JLSO" begin
     # Serialize "Hello World!" on julia 0.5.2 (not supported)
@@ -41,13 +36,10 @@ const DESCRIBE_JOBS_RESP = Dict(
     )
 
     @testset "JLSOFile" begin
-        patch = @patch describe_jobs(args...) = DESCRIBE_JOBS_RESP
 
-        withenv("AWS_BATCH_JOB_ID" => 1) do
-            apply(patch) do
-                jlso = JLSOFile("I'm a batch job.")
-                @test jlso.image == "busybox"
-            end
+        withenv("JLSO_IMAGE" => "busybox") do
+            jlso = JLSOFile("the image env variable is set")
+            @test jlso.image == "busybox"
         end
 
         # Reset the cached image for future tests
@@ -63,13 +55,20 @@ const DESCRIBE_JOBS_RESP = Dict(
         end
     end
 
+    @testset "unknown format" begin
+        @test_throws(
+            LOGGER,
+            ArgumentError,
+            JLSOFile("String" => "Hello World!", format=:unknown)
+        )
+    end
+
     @testset "show" begin
         jlso = JLSOFile(datas["String"])
         expected = string(
             "JLSOFile([data]; version=v\"1.0.0\", julia=v\"$VERSION\", ",
             "format=:serialize, image=\"\")"
         )
-        @test sprint(show, jlso; context=:compact => true) == expected
         @test sprint(show, jlso) == sprint(print, jlso)
     end
 
@@ -97,7 +96,7 @@ const DESCRIBE_JOBS_RESP = Dict(
             jlso = JLSOFile(v"1.0", VERSION, :serialize, img, pkgs, Dict("data" => hw_5))
 
             # Test failing to deserialize data because of incompatible julia versions
-            # will will return the raw bytes
+            # will return the raw bytes
             result = @test_warn(LOGGER, r"MethodError*", jlso["data"])
             @test result == hw_5
 
@@ -143,12 +142,7 @@ const DESCRIBE_JOBS_RESP = Dict(
 
                     # Test failing to deserailize data because of missing modules will
                     # still return the raw bytes
-                    result = if VERSION < v"0.7.0"
-                        @test_warn(LOGGER, r"UndefVarError*", jlso["data"])
-                    else
-                        @test_warn(LOGGER, r"KeyError*", jlso["data"])
-                    end
-
+                    result = @test_warn(LOGGER, r"KeyError*", jlso["data"])
                     @test result == bytes
                 end
 

@@ -1,6 +1,3 @@
 julia 0.7
-AWSCore 0.5.5
-AWSSDK 0.4.0
 BSON
 Memento 0.10.0
-Mocking 0.5.2

@@ -33,12 +33,9 @@ reconstruction.
 """
 module JLSO
 
-using AWSCore
-using AWSSDK.Batch: describe_jobs
 using BSON
 using Serialization
 using Memento
-using Mocking
 using Pkg
 
 export JLSOFile
@@ -104,22 +101,18 @@ JLSOFile(data; kwargs...) = JLSOFile(Dict("data" => data); kwargs...)
 JLSOFile(data::Pair...; kwargs...) = JLSOFile(Dict(data...); kwargs...)
 
 function Base.show(io::IO, jlso::JLSOFile)
-    if get(io, :compat, false)
-        print(io, jlso)
-    else
-        variables = join(names(jlso), ", ")
-        kwargs = join(
-            [
-                "version=v\"$(jlso.version)\"",
-                "julia=v\"$(jlso.julia)\"",
-                "format=:$(jlso.format)",
-                "image=\"$(jlso.image)\"",
-            ],
-            ", "
-        )
+    variables = join(names(jlso), ", ")
+    kwargs = join(
+        [
+            "version=v\"$(jlso.version)\"",
+            "julia=v\"$(jlso.julia)\"",
+            "format=:$(jlso.format)",
+            "image=\"$(jlso.image)\"",
+        ],
+        ", "
+    )
 
-        print(io, "JLSOFile([$variables]; $kwargs)")
-    end
+    print(io, "JLSOFile([$variables]; $kwargs)")
 end
 
 function Base.:(==)(a::JLSOFile, b::JLSOFile)
@@ -254,15 +247,8 @@ function _pkgs()
 end
 
 function _image()
-    if isempty(_CACHE[:IMAGE]) && haskey(ENV, "AWS_BATCH_JOB_ID")
-        job_id = ENV["AWS_BATCH_JOB_ID"]
-        response = @mock describe_jobs(Dict("jobs" => [job_id]))
-
-        if length(response["jobs"]) > 0
-            global _CACHE[:IMAGE] = first(response["jobs"])["container"]["image"]
-        else
-            warn(LOGGER, "No jobs found with id: $job_id.")
-        end
+    if isempty(_CACHE[:IMAGE]) && haskey(ENV, "JLSO_IMAGE")
+        return ENV["JLSO_IMAGE"]
     end
 
     return _CACHE[:IMAGE]
