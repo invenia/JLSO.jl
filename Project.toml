@@ -10,16 +10,16 @@ Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 Serialization = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 
 [compat]
-Memento = "0.10.0"
+Memento = "0.10, 0.11, 0.12"
+TimeZones = "0.9"
 julia = "0.7, 1.0"
 
 [extras]
 AxisArrays = "39de3d68-74b9-583c-8d2d-e117c070f3a9"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
-Nullables = "4d1e1d77-625e-5b40-9113-a560ec7a8ecd"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 TimeZones = "f269a46b-ccf7-5d73-abea-4c690281aa53"
 
 [targets]
-test = ["AxisArrays", "DataFrames", "Distributions", "Nullables", "Test", "TimeZones"]
+test = ["AxisArrays", "DataFrames", "Distributions", "Test", "TimeZones"]
