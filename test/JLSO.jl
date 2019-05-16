@@ -3,7 +3,6 @@ using JLSO: JLSOFile, LOGGER
 # To test different types from common external packages
 using DataFrames
 using Distributions
-using Nullables  # Needed for loading BSON encoded ZonedDateTimes on 1.0
 using TimeZones
 
 @testset "JLSO" begin
