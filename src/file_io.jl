@@ -18,6 +18,8 @@ function Base.write(io::IO, jlso::JLSOFile)
     )
 end
 
+# `read`, unlike `load` does not deserialize any of the objects within the JLSO file,
+# they will be `deserialized` when they are indexed out of the returned JSLOFile object.
 function Base.read(io::IO, ::Type{JLSOFile})
     d = BSON.load(io)
     return JLSOFile(
