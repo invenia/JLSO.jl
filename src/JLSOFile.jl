@@ -9,7 +9,7 @@ struct JLSOFile
 end
 
 """
-    JLSOFile(data; format=:julia_native, compression=:none, kwargs...)
+    JLSOFile(data; format=:julia_serialize, compression=:none, kwargs...)
 
 Stores the information needed to write a .jlso file.
 
@@ -22,8 +22,8 @@ Stores the information needed to write a .jlso file.
 - `image=""` - The docker image URI that was used to generate the file
 - `julia=$VERSION` - The julia version used to write the file
 - `version=v"2.0"` - The file schema version
-- `format=:julia_native` - The format to use for serializing individual objects. While `:bson` is
-    recommended for longer term object storage, `:julia_native` tends to be the faster choice
+- `format=:julia_serialize` - The format to use for serializing individual objects. While `:bson` is
+    recommended for longer term object storage, `:julia_serialize` tends to be the faster choice
     for adhoc serialization.
 - `compression=:none`, what form of compression to apply to the objects. Use :none, to not compress.
 """
@@ -31,13 +31,13 @@ function JLSOFile(
     data::Dict{String, <:Any};
     version=v"2.0.0",
     julia=VERSION,
-    format=:julia_native,
+    format=:julia_serialize,
     compression=:none,
     image=_image(),
 )
     if format == :serialize
-        @warn "the format keyword `:serialize` has been renamed to `:julia_native`."
-        format = :julia_native
+        @warn "the format keyword `:serialize` has been renamed to `:julia_serialize`."
+        format = :julia_serialize
     end
 
     _versioncheck(version, WRITEABLE_VERSIONS)

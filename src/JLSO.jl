@@ -13,7 +13,7 @@ Dict(
     "metadata" => Dict(
         "version" => v"2.0",
         "julia" => v"1.0.4",
-        "format" => :bson,  # Could also be :julia_native
+        "format" => :bson,  # Could also be :julia_serialize
         "compression" => :none,
         "image" => "xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/myrepository:latest"
         "pkgs" => Dict(

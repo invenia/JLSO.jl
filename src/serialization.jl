@@ -9,7 +9,7 @@ const formatters = (
         deserialize! = first ∘ values ∘ BSON.load,
         serialize! = (io, value) -> bson(io, Dict("object" => value))
     ),
-    julia_native = (
+    julia_serialize = (
         deserialize! = Serialization.deserialize,
         serialize! = Serialization.serialize,
     )

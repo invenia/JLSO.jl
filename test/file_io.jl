@@ -1,5 +1,5 @@
 @testset "reading and writing" begin
-    @testset "$fmt - $k" for fmt in (:bson, :julia_native), (k, v) in datas
+    @testset "$fmt - $k" for fmt in (:bson, :julia_serialize), (k, v) in datas
         io = IOBuffer()
         orig = JLSOFile(v; format=fmt)
         write(io, orig)
@@ -13,13 +13,13 @@ end
 
 @testset "deserialization" begin
     # Test deserialization works
-    @testset "$fmt - $k" for fmt in (:bson, :julia_native), (k, v) in datas
+    @testset "$fmt - $k" for fmt in (:bson, :julia_serialize), (k, v) in datas
         jlso = JLSOFile(v; format=fmt)
         @test jlso["data"] == v
     end
 
     @testset "unsupported julia version" begin
-        jlso = JLSOFile(v"1.0", VERSION, :julia_native, :none, img, pkgs, Dict("data" => hw_5))
+        jlso = JLSOFile(v"1.0", VERSION, :julia_serialize, :none, img, pkgs, Dict("data" => hw_5))
 
         # Test failing to deserialize data because of incompatible julia versions
         # will return the raw bytes
@@ -63,7 +63,7 @@ end
                 bytes = take!(io)
 
                 jlso = JLSOFile(
-                    v"2.0", VERSION, :julia_native, :none, img, pkgs, Dict("data" => bytes)
+                    v"2.0", VERSION, :julia_serialize, :none, img, pkgs, Dict("data" => bytes)
                 )
 
                 # Test failing to deserailize data because of missing modules will
@@ -109,7 +109,7 @@ end
 
 @testset "saving and loading" begin
     mktempdir() do path
-        @testset "$fmt - $k" for fmt in (:bson, :julia_native), (k, v) in datas
+        @testset "$fmt - $k" for fmt in (:bson, :julia_serialize), (k, v) in datas
             JLSO.save("$path/$fmt-$k.jlso", k => v; format=fmt)
             result = JLSO.load("$path/$fmt-$k.jlso")
             @test result[k] == v
