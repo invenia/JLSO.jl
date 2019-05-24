@@ -2,13 +2,14 @@ struct JLSOFile
     version::VersionNumber
     julia::VersionNumber
     format::Symbol
+    compression::Symbol
     image::String
     pkgs::Dict{String, VersionNumber}
     objects::Dict{String, Vector{UInt8}}
 end
 
 """
-    JLSOFile(data; image="", julia=$VERSION, version=v"2.0, format=:julia_native)
+    JLSOFile(data; format=:julia_native, compression=:none, kwargs...)
 
 Stores the information needed to write a .jlso file.
 
@@ -24,12 +25,14 @@ Stores the information needed to write a .jlso file.
 - `format=:julia_native` - The format to use for serializing individual objects. While `:bson` is
     recommended for longer term object storage, `:julia_native` tends to be the faster choice
     for adhoc serialization.
+- `compression=:none`, what form of compression to apply to the objects. Use :none, to not compress.
 """
 function JLSOFile(
     data::Dict{String, <:Any};
     version=v"2.0.0",
     julia=VERSION,
     format=:julia_native,
+    compression=:none,
     image=_image(),
 )
     if format == :serialize
@@ -39,7 +42,7 @@ function JLSOFile(
 
     _versioncheck(version, WRITEABLE_VERSIONS)
     objects = Dict{String, Vector{UInt8}}()
-    jlso = JLSOFile(version, julia, format, image, _pkgs(), objects)
+    jlso = JLSOFile(version, julia, format, compression, image, _pkgs(), objects)
 
     for (key, val) in data
         jlso[key] = val
@@ -58,6 +61,7 @@ function Base.show(io::IO, jlso::JLSOFile)
             "version=v\"$(jlso.version)\"",
             "julia=v\"$(jlso.julia)\"",
             "format=:$(jlso.format)",
+            "compression=:$(jlso.compression)",
             "image=\"$(jlso.image)\"",
         ],
         ", "
@@ -73,6 +77,7 @@ function Base.:(==)(a::JLSOFile, b::JLSOFile)
         a.image == b.image &&
         a.pkgs == b.pkgs &&
         a.format == b.format &&
+        a.compression == b.compression &&
         a.objects == b.objects
     )
 end

@@ -21,6 +21,21 @@ function formatter(format)
     end
 end
 
+
+const compressors = (
+    none = (
+        compress = identity,
+        decompress = identity
+    ),
+)
+
+function compressor(compression)
+    return get(compressors, compression) do
+        error(LOGGER, ArgumentError("Unsupported compression $(compression)"))
+    end
+end
+
+
 """
     getindex(jlso, name)
 
@@ -29,7 +44,8 @@ Returns the deserialized object with the specified name.
 function Base.getindex(jlso::JLSOFile, name::String)
     try
         buffer = IOBuffer(jlso.objects[name])
-        return formatter(jlso.format).deserialize!(buffer)
+        decompressing_buffer = compressor(jlso.compression).decompress(buffer)
+        return formatter(jlso.format).deserialize!(decompressing_buffer)
     catch e
         warn(LOGGER, e)
         return jlso.objects[name]
@@ -43,7 +59,7 @@ Adds the object to the file and serializes it.
 """
 function Base.setindex!(jlso::JLSOFile, value, name::String)
     buffer = IOBuffer()
-
+    compressing_buffer = compressor(jlso.compression).compress(buffer)
     formatter(jlso.format).serialize!(buffer, value)
 
     jlso.objects[name] = take!(buffer)

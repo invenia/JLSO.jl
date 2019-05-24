@@ -19,7 +19,7 @@ end
     end
 
     @testset "unsupported julia version" begin
-        jlso = JLSOFile(v"1.0", VERSION, :julia_native, img, pkgs, Dict("data" => hw_5))
+        jlso = JLSOFile(v"1.0", VERSION, :julia_native, :none, img, pkgs, Dict("data" => hw_5))
 
         # Test failing to deserialize data because of incompatible julia versions
         # will return the raw bytes
@@ -63,7 +63,7 @@ end
                 bytes = take!(io)
 
                 jlso = JLSOFile(
-                    v"2.0", VERSION, :julia_native, img, pkgs, Dict("data" => bytes)
+                    v"2.0", VERSION, :julia_native, :none, img, pkgs, Dict("data" => bytes)
                 )
 
                 # Test failing to deserailize data because of missing modules will
@@ -92,7 +92,7 @@ end
                 bytes = take!(io)
 
                 jlso = JLSOFile(
-                    v"1.0", VERSION, :bson, img, pkgs, Dict("data" => bytes)
+                    v"1.0", VERSION, :bson, :none, img, pkgs, Dict("data" => bytes)
                 )
 
                 # Test failing to deserailize data because of missing modules will

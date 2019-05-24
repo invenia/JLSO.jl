@@ -8,12 +8,16 @@
     @testset "upgrade 1.0" begin
         d = Dict("metadata" => Dict("version" => v"1.0", "format"=>:serialize))
         upgrade_jlso!(d)
-        @test d == Dict("metadata" => Dict("version" => v"2.0", "format"=>:julia_native))
+        @test d == Dict("metadata" => Dict(
+            "version" => v"2.0", "format"=>:julia_native, "compression" => :none
+        ))
 
         @testset "Don't rename bson format" begin
             d = Dict("metadata" => Dict("version" => v"1.0", "format"=>:bson))
             upgrade_jlso!(d)
-            @test d == Dict("metadata" => Dict("version" => v"2.0", "format"=>:bson))
+            @test d == Dict("metadata" => Dict(
+                "version" => v"2.0", "format"=>:bson, "compression" => :none
+            ))
         end
     end
 end
