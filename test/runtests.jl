@@ -8,7 +8,7 @@ using Serialization
 using Test
 
 using JLSO
-using JLSO: JLSOFile, LOGGER
+using JLSO: JLSOFile, LOGGER, upgrade_jlso!
 
 # To test different types from common external packages
 using DataFrames

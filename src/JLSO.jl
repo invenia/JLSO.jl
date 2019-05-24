@@ -11,9 +11,9 @@ Example)
 ```
 Dict(
     "metadata" => Dict(
-        "version" => v"1.0",
-        "julia" => v"0.6.4",
-        "format" => :bson,  # Could also be :serialize
+        "version" => v"2.0",
+        "julia" => v"1.0.4",
+        "format" => :bson,  # Could also be :julia_native
         "image" => "xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/myrepository:latest"
         "pkgs" => Dict(
             "AxisArrays" => v"0.2.1",
@@ -36,14 +36,17 @@ module JLSO
 using BSON
 using Serialization
 using Memento
-using Pkg
+using Pkg: Pkg
+using Pkg.Types: semver_spec
 
 export JLSOFile
 
-const LOGGER = getlogger(@__MODULE__)
-const VALID_VERSIONS = (v"1.0", v"2.0")
+const READABLE_VERSIONS = semver_spec("1, 2")
+const WRITEABLE_VERSIONS = semver_spec("2")
 
+const LOGGER = getlogger(@__MODULE__)
 __init__() = Memento.register(LOGGER)
+
 include("JLSOFile.jl")
 include("file_io.jl")
 include("metadata.jl")

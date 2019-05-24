@@ -1,9 +1,9 @@
-function _versioncheck(version::VersionNumber)
-    supported = first(VALID_VERSIONS) <= version < last(VALID_VERSIONS)
+function _versioncheck(version::VersionNumber, valid_versions)
+    supported = version ∈ valid_versions
     supported || error(LOGGER, ArgumentError(
         string(
             "Unsupported version ($version). ",
-            "Expected a value between ($VALID_VERSIONS)."
+            "Expected a value between ($SAVVALID_VERSIONS)."
         )
     ))
 end

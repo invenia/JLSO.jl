@@ -1,5 +1,26 @@
 # This is the code that hands the serialiation and deserialization of each object
 
+const formatters = (
+    # format = (
+    #    deserialize! # IO -> value
+    #    serialize! # IO, Value -> nothing
+    #)
+    bson = (
+        deserialize! = first ∘ values ∘ BSON.load,
+        serialize! = (io, value) -> bson(io, Dict("object" => value))
+    ),
+    julia_native = (
+        deserialize! = Serialization.deserialize,
+        serialize! = Serialization.serialize,
+    )
+)
+
+function formatter(format)
+    return get(formatters, format) do
+        error(LOGGER, ArgumentError("Unsupported format $(format)"))
+    end
+end
+
 """
     getindex(jlso, name)
 
@@ -7,13 +28,8 @@ Returns the deserialized object with the specified name.
 """
 function Base.getindex(jlso::JLSOFile, name::String)
     try
-        if jlso.format === :bson
-            BSON.load(IOBuffer(jlso.objects[name]))[name]
-        elseif jlso.format === :serialize
-            deserialize(IOBuffer(jlso.objects[name]))
-        else
-            error(LOGGER, ArgumentError("Unsupported format $(jlso.format)"))
-        end
+        buffer = IOBuffer(jlso.objects[name])
+        return formatter(jlso.format).deserialize!(buffer)
     catch e
         warn(LOGGER, e)
         return jlso.objects[name]
@@ -26,15 +42,9 @@ end
 Adds the object to the file and serializes it.
 """
 function Base.setindex!(jlso::JLSOFile, value, name::String)
-    io = IOBuffer()
+    buffer = IOBuffer()
 
-    if jlso.format === :bson
-        bson(io, Dict(name => value))
-    elseif jlso.format === :serialize
-        serialize(io, value)
-    else
-        error(LOGGER, ArgumentError("Unsupported format $(jlso.format)"))
-    end
+    formatter(jlso.format).serialize!(buffer, value)
 
-    jlso.objects[name] = take!(io)
+    jlso.objects[name] = take!(buffer)
 end
