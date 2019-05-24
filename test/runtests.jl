@@ -17,6 +17,7 @@ using TimeZones
 
 include("test_data_setup.jl")
 @testset "JLSO" begin
+    include("backwards_compat.jl")
     include("JLSOFile.jl")
     include("file_io.jl")
 end

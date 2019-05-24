@@ -116,23 +116,3 @@ end
         end
     end
 end
-
-@testset "upgrade_jlso" begin
-    @testset "no change for current version" begin
-        d = Dict("metadata" => Dict("version" => v"2.0"))
-        upgrade_jlso!(d)
-        @test d == Dict("metadata" => Dict("version" => v"2.0"))
-    end
-
-    @testset "upgrade 1.0" begin
-        d = Dict("metadata" => Dict("version" => v"1.0", "format"=>:serialize))
-        upgrade_jlso!(d)
-        @test d == Dict("metadata" => Dict("version" => v"2.0", "format"=>:julia_native))
-
-        @testset "Don't rename bson format" begin
-            d = Dict("metadata" => Dict("version" => v"1.0", "format"=>:bson))
-            upgrade_jlso!(d)
-            @test d == Dict("metadata" => Dict("version" => v"2.0", "format"=>:bson))
-        end
-    end
-end
