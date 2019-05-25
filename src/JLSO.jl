@@ -35,6 +35,7 @@ reconstruction.
 module JLSO
 
 using BSON
+using CodecZlib
 using Serialization
 using Memento
 using Pkg: Pkg

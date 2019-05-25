@@ -26,7 +26,9 @@ end
 # JLSO.save("specimens/v1_serialize.jlso", datas; format=:serialize)
 # JLSO.save("specimens/v1_bson.jlso", datas; format=:bson)
 
-@testset "v1 compat" begin
-    @test JLSO.load("specimens/v1_serialize.jlso") == datas
-    @test JLSO.load("specimens/v1_bson.jlso") == datas
+@testset "Can still load old files" begin
+    dir = joinpath(@__DIR__, "specimens")
+    @testset "$fn" for fn in readdir(dir)
+        @test JLSO.load(joinpath(dir, fn)) == datas
+    end
 end

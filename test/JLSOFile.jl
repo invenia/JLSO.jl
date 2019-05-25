@@ -9,10 +9,11 @@
     JLSO._CACHE[:IMAGE] = ""
 
     @testset "$fmt - $k" for fmt in (:bson, :julia_serialize), (k, v) in datas
-        jlso = JLSOFile(k => v; format=fmt)
+        jlso = JLSOFile(k => v; format=fmt, compression=:none)
         io = IOBuffer()
         bytes = fmt === :bson ? bson(io, Dict("object" => v)) : serialize(io, v)
-        expected = take!(io)
+        close(io)
+        expected = io.data
 
         @test jlso.objects[k] == expected
     end

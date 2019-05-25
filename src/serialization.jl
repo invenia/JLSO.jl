@@ -27,6 +27,18 @@ const compressors = (
         compress = identity,
         decompress = identity
     ),
+    gzip = (
+        compress = GzipCompressorStream,
+        decompress = GzipDecompressorStream,
+    ),
+    gzip_fastest = (
+        compress = io -> GzipCompressorStream(io; level=1),
+        decompress = GzipDecompressorStream,
+    ),
+    gzip_smallest = (
+        compress = io -> GzipCompressorStream(io; level=9),
+        decompress = GzipDecompressorStream,
+    ),
 )
 
 function compressor(compression)
@@ -60,7 +72,9 @@ Adds the object to the file and serializes it.
 function Base.setindex!(jlso::JLSOFile, value, name::String)
     buffer = IOBuffer()
     compressing_buffer = compressor(jlso.compression).compress(buffer)
-    formatter(jlso.format).serialize!(buffer, value)
+    formatter(jlso.format).serialize!(compressing_buffer, value)
 
-    jlso.objects[name] = take!(buffer)
+    # need to close buffer so any compression can write end of body stuffs.
+    close(compressing_buffer)
+    jlso.objects[name] = buffer.data  # can't use take! as stream is now closed
 end
