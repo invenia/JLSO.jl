@@ -9,7 +9,7 @@ struct JLSOFile
 end
 
 """
-    JLSOFile(data; format=:julia_serialize, compression=:none, kwargs...)
+    JLSOFile(data; format=:julia_serialize, compression=:gzip, kwargs...)
 
 Stores the information needed to write a .jlso file.
 
@@ -25,18 +25,22 @@ Stores the information needed to write a .jlso file.
 - `format=:julia_serialize` - The format to use for serializing individual objects. While `:bson` is
     recommended for longer term object storage, `:julia_serialize` tends to be the faster choice
     for adhoc serialization.
-- `compression=:none`, what form of compression to apply to the objects. Use :none, to not compress.
+- `compression=:gzip`, what form of compression to apply to the objects.
+    Use :none, to not compress. :gzip_fastest for the fastest gzip compression,
+    :gzip_smallest for the most compact (but slowest), or :gzip for a generally good compromize.
+    Due to the time taken for disk IO, :none is not normally as fast as using some compression.
 """
 function JLSOFile(
     data::Dict{String, <:Any};
     version=v"2.0.0",
     julia=VERSION,
     format=:julia_serialize,
-    compression=:none,
+    compression=:gzip,
     image=_image(),
 )
     if format == :serialize
-        @warn "the format keyword `:serialize` has been renamed to `:julia_serialize`."
+        # Deprecation warning
+        @warn "The `:serialize` format has been renamed to `:julia_serialize`."
         format = :julia_serialize
     end
 
