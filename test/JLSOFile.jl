@@ -21,7 +21,7 @@ end
 @testset "unknown format" begin
     @test_throws(
         LOGGER,
-        ArgumentError,
+        MethodError,
         JLSOFile("String" => "Hello World!", format=:unknown)
     )
 end

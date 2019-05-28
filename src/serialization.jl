@@ -1,82 +1,31 @@
 # This is the code that hands the serialiation and deserialization of each object
 
-const FORMATTERS = (
-    # format = (
-    #    deserialize! # IO -> value
-    #    serialize! # IO, Value -> nothing
-    #)
-    bson = (
-        deserialize! = first ∘ values ∘ BSON.load,
-        serialize! = (io, value) -> bson(io, Dict("object" => value))
-    ),
-    julia_serialize = (
-        deserialize! = Serialization.deserialize,
-        serialize! = Serialization.serialize,
-    )
-)
+struct Formatter{S} end
+deserialize(format::Symbol, io) = deserialize(Formatter{format}(), io)
+serialize(format::Symbol, io, value) = serialize(Formatter{format}(), io, value)
 
-function formatter(format)
-    return get(FORMATTERS, format) do
-        error(LOGGER, ArgumentError("Unsupported format $(format)"))
-    end
-end
+deserialize(::Formatter{:bson}, io) = first(values(BSON.load(io)))
+serialize(::Formatter{:bson}, io, value) = bson(io, Dict("object" => value))
 
+deserialize(::Formatter{:julia_serialize}, io) = Serialization.deserialize(io)
+serialize(::Formatter{:julia_serialize}, io, value) = Serialization.serialize(io, value)
 
-const COMPRESSORS = (
-    none = (
-        compress = identity,
-        decompress = identity
-    ),
-    gzip = (
-        compress = GzipCompressorStream,
-        decompress = GzipDecompressorStream,
-    ),
-    gzip_fastest = (
-        compress = io -> GzipCompressorStream(io; level=1),
-        decompress = GzipDecompressorStream,
-    ),
-    gzip_smallest = (
-        compress = io -> GzipCompressorStream(io; level=9),
-        decompress = GzipDecompressorStream,
-    ),
-)
+struct Compressor{S} end
+compress(compression::Symbol, io) = compress(Compressor{compression}(), io)
+decompress(compression::Symbol, io) = decompress(Compressor{compression}(), io)
 
-function compressor(compression)
-    return get(COMPRESSORS, compression) do
-        error(LOGGER, ArgumentError("Unsupported compression $(compression)"))
-    end
-end
+compress(::Compressor{:none}, io) = io
+decompress(::Compressor{:none}, io) = io
 
+compress(::Compressor{:gzip}, io) = GzipCompressorStream(io)
+decompress(::Compressor{:gzip}, io) = GzipDecompressorStream(io)
 
-"""
-    getindex(jlso, name)
+compress(::Compressor{:gzip_fastest}, io) = GzipCompressorStream(io; level=1)
+decompress(::Compressor{:gzip_fastest}, io) = GzipDecompressorStream(io)
 
-Returns the deserialized object with the specified name.
-"""
-function Base.getindex(jlso::JLSOFile, name::String)
-    try
-        buffer = IOBuffer(jlso.objects[name])
-        decompressing_buffer = compressor(jlso.compression).decompress(buffer)
-        return formatter(jlso.format).deserialize!(decompressing_buffer)
-    catch e
-        warn(LOGGER, e)
-        return jlso.objects[name]
-    end
-end
+compress(::Compressor{:gzip_smallest}, io) = GzipCompressorStream(io; level=9)
+decompress(::Compressor{:gzip_smallest}, io) = GzipDecompressorStream(io)
 
-"""
-    setindex!(jlso, value, name)
-
-Adds the object to the file and serializes it.
-"""
-function Base.setindex!(jlso::JLSOFile, value, name::String)
-    buffer = IOBuffer()
-    compressing_buffer = compressor(jlso.compression).compress(buffer)
-    formatter(jlso.format).serialize!(compressing_buffer, value)
-    complete_compression(compressing_buffer)
-    
-    jlso.objects[name] = take!(buffer)
-end
 
 """
     complete_compression(compressing_buffer)
@@ -90,4 +39,35 @@ function complete_compression(compressing_buffer::CodecZlib.TranscodingStream)
     # But can't use normal `close` without closing `buffer` as well
     # see https://github.com/bicycle1885/TranscodingStreams.jl/issues/85
     CodecZlib.TranscodingStreams.changemode!(compressing_buffer, :close)
+end
+
+
+"""
+    getindex(jlso, name)
+
+Returns the deserialized object with the specified name.
+"""
+function Base.getindex(jlso::JLSOFile, name::String)
+    try
+        buffer = IOBuffer(jlso.objects[name])
+        decompressing_buffer = decompress(jlso.compression, buffer)
+        return deserialize(jlso.format, decompressing_buffer)
+    catch e
+        warn(LOGGER, e)
+        return jlso.objects[name]
+    end
+end
+
+"""
+    setindex!(jlso, value, name)
+
+Adds the object to the file and serializes it.
+"""
+function Base.setindex!(jlso::JLSOFile, value, name::String)
+    buffer = IOBuffer()
+    compressing_buffer = compress(jlso.compression, buffer)
+    serialize(jlso.format, compressing_buffer, value)
+    complete_compression(compressing_buffer)
+
+    jlso.objects[name] = take!(buffer)
 end
