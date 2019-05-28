@@ -1,6 +1,6 @@
 # This is the code that hands the serialiation and deserialization of each object
 
-const formatters = (
+const FORMATTERS = (
     # format = (
     #    deserialize! # IO -> value
     #    serialize! # IO, Value -> nothing
@@ -16,13 +16,13 @@ const formatters = (
 )
 
 function formatter(format)
-    return get(formatters, format) do
+    return get(FORMATTERS, format) do
         error(LOGGER, ArgumentError("Unsupported format $(format)"))
     end
 end
 
 
-const compressors = (
+const COMPRESSORS = (
     none = (
         compress = identity,
         decompress = identity
@@ -42,7 +42,7 @@ const compressors = (
 )
 
 function compressor(compression)
-    return get(compressors, compression) do
+    return get(COMPRESSORS, compression) do
         error(LOGGER, ArgumentError("Unsupported compression $(compression)"))
     end
 end

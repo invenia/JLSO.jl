@@ -3,7 +3,7 @@ function _versioncheck(version::VersionNumber, valid_versions)
     supported || error(LOGGER, ArgumentError(
         string(
             "Unsupported version ($version). ",
-            "Expected a value between ($SAVVALID_VERSIONS)."
+            "Expected a value between ($valid_versions)."
         )
     ))
 end

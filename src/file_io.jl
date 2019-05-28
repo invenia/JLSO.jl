@@ -39,7 +39,7 @@ end
 
 function upgrade_jlso!(raw_dict::AbstractDict)
     metadata = raw_dict["metadata"]
-    if  metadata["version"] ∈ semver_spec("1")
+    if metadata["version"] ∈ semver_spec("1")
         if metadata["format"] == :serialize
             metadata["format"] = :julia_serialize
         end
