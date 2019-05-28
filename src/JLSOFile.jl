@@ -38,7 +38,7 @@ function JLSOFile(
     compression=:gzip,
     image=_image(),
 )
-    if format == :serialize
+    if format === :serialize
         # Deprecation warning
         @warn "The `:serialize` format has been renamed to `:julia_serialize`."
         format = :julia_serialize
