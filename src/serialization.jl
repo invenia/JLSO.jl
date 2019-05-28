@@ -73,8 +73,21 @@ function Base.setindex!(jlso::JLSOFile, value, name::String)
     buffer = IOBuffer()
     compressing_buffer = compressor(jlso.compression).compress(buffer)
     formatter(jlso.format).serialize!(compressing_buffer, value)
+    complete_compression(compressing_buffer)
+    
+    jlso.objects[name] = take!(buffer)
+end
 
-    # need to close buffer so any compression can write end of body stuffs.
-    close(compressing_buffer)
-    jlso.objects[name] = buffer.data  # can't use take! as stream is now closed
+"""
+    complete_compression(compressing_buffer)
+Writes any end of compression sequence to the compressing buffer;
+but does not close the underlying stream.
+The compressing_buffer itself should not be used after this operation
+"""
+complete_compression(::Any) = nothing
+function complete_compression(compressing_buffer::CodecZlib.TranscodingStream)
+    # need to close `compressing_buffer` so any compression can write end of body stuffs.
+    # But can't use normal `close` without closing `buffer` as well
+    # see https://github.com/bicycle1885/TranscodingStreams.jl/issues/85
+    CodecZlib.TranscodingStreams.changemode!(compressing_buffer, :close)
 end

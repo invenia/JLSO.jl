@@ -12,8 +12,7 @@
         jlso = JLSOFile(k => v; format=fmt, compression=:none)
         io = IOBuffer()
         bytes = fmt === :bson ? bson(io, Dict("object" => v)) : serialize(io, v)
-        close(io)
-        expected = io.data
+        expected = take!(io)
 
         @test jlso.objects[k] == expected
     end
