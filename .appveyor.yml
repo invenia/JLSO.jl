@@ -10,6 +10,7 @@ platform:
 matrix:
   allow_failures:
     - julia_version: nightly
+    - platform: x86  # see https://github.com/invenia/JLSO.jl/issues/12
 branches:
   only:
     - master
