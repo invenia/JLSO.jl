@@ -3,6 +3,7 @@
 # that is done lazily and the code for that is in serialization.jl
 
 function Base.write(io::IO, jlso::JLSOFile)
+    _versioncheck(jlso.version, WRITEABLE_VERSIONS)
     bson(
         io,
         Dict(
@@ -10,6 +11,7 @@ function Base.write(io::IO, jlso::JLSOFile)
                 "version" => jlso.version,
                 "julia" => jlso.julia,
                 "format" => jlso.format,
+                "compression" => jlso.compression,
                 "image" => jlso.image,
                 "pkgs" => jlso.pkgs,
             ),
@@ -22,15 +24,31 @@ end
 # they will be `deserialized` when they are indexed out of the returned JSLOFile object.
 function Base.read(io::IO, ::Type{JLSOFile})
     d = BSON.load(io)
+    _versioncheck(d["metadata"]["version"], READABLE_VERSIONS)
+    upgrade_jlso!(d)
     return JLSOFile(
         d["metadata"]["version"],
         d["metadata"]["julia"],
         d["metadata"]["format"],
+        d["metadata"]["compression"],
         d["metadata"]["image"],
         d["metadata"]["pkgs"],
         d["objects"],
     )
 end
+
+function upgrade_jlso!(raw_dict::AbstractDict)
+    metadata = raw_dict["metadata"]
+    if metadata["version"] ∈ semver_spec("1")
+        if metadata["format"] == :serialize
+            metadata["format"] = :julia_serialize
+        end
+        metadata["compression"] = :none
+        metadata["version"] = v"2"
+    end
+    return raw_dict
+end
+
 
 """
     save(io, data)
