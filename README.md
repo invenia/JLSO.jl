@@ -18,5 +18,4 @@ The metadata (always stored in BSON) includes the Julia version and the versions
 This means in the worst case you can install everything again and replicate your system.
 (Extreme worst case scenario, using a BSON reader from another programming language).
 
-Note: If the amount of data you have to store is very small, relative to the metadata about your environment, then it is a pretty suboptimal format.
-Then is is a pretty suboptimal format.
+Note: If the amount of data you have to store is very small, relative to the metadata about your environment, then JLSO is a pretty suboptimal format.
