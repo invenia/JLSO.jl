@@ -14,9 +14,9 @@ Depending on configuration, those objects may themselves be stored as BSON sub-d
 or in the native Julia serialization format (default).
 It is fast and efficient to load just single objects out of a larger file that contains many objects.
 
-The metadata (always stored in BSON) includes the Julia version and the versions of all packagers installed.
-This means in the worst case you can installed everything again and replicate your system.
-(Extreme worst case senario, using a BSON reader from anyther programming language).
+The metadata (always stored in BSON) includes the Julia version and the versions of all packages installed.
+This means in the worst case you can install everything again and replicate your system.
+(Extreme worst case scenario, using a BSON reader from another programming language).
 
-Note: that if the amount of data you have to store is very small, relative to the metadata about your enviroment.
+Note: If the amount of data you have to store is very small, relative to the metadata about your environment, then it is a pretty suboptimal format.
 Then is is a pretty suboptimal format.
