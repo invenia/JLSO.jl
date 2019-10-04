@@ -6,16 +6,37 @@
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/invenia/JLSO.jl?svg=true)](https://ci.appveyor.com/project/invenia/JLSO-jl)
 [![Codecov](https://codecov.io/gh/invenia/JLSO.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/invenia/JLSO.jl)
 
-JLSO is a storage container for serialized Julia objects.
+JLSO is a storage container for serialized Julia objects.  
+Think of it less as a serialization format but as a container,
+that employs a serializer, and a compressor, handles all the other concerns including metadata and saving.
+Such that the serializer just needs to determine how to turn a julia object into a stream`Vector{UInt8}`,
+and the compressor just needs to determine how to turn one stream of `UInt8`s into a smaller one (and the reverse).
+
+
 At the top-level it is a BSON file,
 where it stores metadata about the system it was created on as well as a collection of objects (the actual data).
-
 Depending on configuration, those objects may themselves be stored as BSON sub-documents,
-or in the native Julia serialization format (default).
+or in the native Julia serialization format (default), under various levels of compression (`gzip` default).
 It is fast and efficient to load just single objects out of a larger file that contains many objects.
 
-The metadata (always stored in BSON) includes the Julia version and the versions of all packages installed.
+The metadata includes the Julia version and the versions of all packages installed.
+It is always store in plain BSON without julia specific extensions.
 This means in the worst case you can install everything again and replicate your system.
 (Extreme worst case scenario, using a BSON reader from another programming language).
 
 Note: If the amount of data you have to store is very small, relative to the metadata about your environment, then JLSO is a pretty suboptimal format.
+
+
+### Basic Example:
+
+```
+julia> using JLSO, Dates
+
+julia> JLSO.save("breakfast.jlso", "food"=>"☕️🥓🍳", "cost"=>11.95, "time"=>Time(9,0))
+
+julia> loaded = JLSO.load("breakfast.jlso")
+Dict{String,Any} with 3 entries:
+  "cost" => 11.95
+  "time" => 09:00:00
+  "food" => "☕️🥓🍳"
+```
