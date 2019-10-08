@@ -1,12 +1,28 @@
 struct JLSOFile
-    version::VersionNumber
-    julia::VersionNumber
+    version::String
+    julia::String
     format::Symbol
     compression::Symbol
     image::String
-    pkgs::Dict{String, VersionNumber}
+    project_toml::String
+    manifest_toml::String
     objects::Dict{String, Vector{UInt8}}
 end
+
+@deprecate(
+    JLSOFile(
+        version::VersionNumber,
+        julia::VersionNumber,
+        format::Symbol,
+        compression::Symbol,
+        image::String,
+        pkgs::Dict{String, VersionNumber},
+        objects::Dict{String, Vector{UInt8}},
+    ),
+    JLSOFile(
+        string(version), string(julia), format, compression, image, _env(pkgs)..., objects,
+    )
+)
 
 """
     JLSOFile(data; format=:julia_serialize, compression=:gzip, kwargs...)
@@ -32,8 +48,8 @@ Stores the information needed to write a .jlso file.
 """
 function JLSOFile(
     data::Dict{String, <:Any};
-    version=v"2.0.0",
-    julia=VERSION,
+    version="3.0.0",
+    julia=string(VERSION),
     format=:julia_serialize,
     compression=:gzip,
     image=_image(),
@@ -46,7 +62,7 @@ function JLSOFile(
 
     _versioncheck(version, WRITEABLE_VERSIONS)
     objects = Dict{String, Vector{UInt8}}()
-    jlso = JLSOFile(version, julia, format, compression, image, _pkgs(), objects)
+    jlso = JLSOFile(version, julia, format, compression, image, _env()..., objects)
 
     for (key, val) in data
         jlso[key] = val
@@ -62,8 +78,8 @@ function Base.show(io::IO, jlso::JLSOFile)
     variables = join(names(jlso), ", ")
     kwargs = join(
         [
-            "version=v\"$(jlso.version)\"",
-            "julia=v\"$(jlso.julia)\"",
+            "version=\"$(jlso.version)\"",
+            "julia=\"$(jlso.julia)\"",
             "format=:$(jlso.format)",
             "compression=:$(jlso.compression)",
             "image=\"$(jlso.image)\"",
@@ -79,7 +95,7 @@ function Base.:(==)(a::JLSOFile, b::JLSOFile)
         a.version == b.version &&
         a.julia == b.julia &&
         a.image == b.image &&
-        a.pkgs == b.pkgs &&
+        a.manifest_toml == b.manifest_toml &&
         a.format == b.format &&
         a.compression == b.compression &&
         a.objects == b.objects
@@ -87,5 +103,24 @@ function Base.:(==)(a::JLSOFile, b::JLSOFile)
 end
 
 Base.names(jlso::JLSOFile) = collect(keys(jlso.objects))
+function Base.getproperty(jlso::JLSOFile, attr::Symbol)
+    if attr === :pkgs
+        @warn "pkgs property is deprecated, use manifest or manifest_toml"
+        manifest = Pkg.TOML.parse(jlso.manifest_toml)
+        results = Dict{String, VersionNumber}()
+        for (name, pkg) in manifest
+            results[name] = get(first(pkg), "version", v"0.0.0")
+        end
 
+        return results
+    elseif attr === :manifest
+        return Pkg.TOML.parse(jlso.manifest_toml)
+    elseif attr === :project
+        return Pkg.TOML.parse(jlso.manifest_toml)
+    elseif attr === :separator
+        return POSIX_PATH_SEPARATOR
+    else
+        return getfield(jlso, attr)
+    end
+end
 # TODO: Include a more detail summary method for displaying version information.

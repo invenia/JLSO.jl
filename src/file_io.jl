@@ -13,7 +13,8 @@ function Base.write(io::IO, jlso::JLSOFile)
                 "format" => jlso.format,
                 "compression" => jlso.compression,
                 "image" => jlso.image,
-                "pkgs" => jlso.pkgs,
+                "project_toml" => jlso.project_toml,
+                "manifest_toml" => jlso.manifest_toml,
             ),
             "objects" => jlso.objects,
         )
@@ -27,25 +28,43 @@ function Base.read(io::IO, ::Type{JLSOFile})
     _versioncheck(d["metadata"]["version"], READABLE_VERSIONS)
     upgrade_jlso!(d)
     return JLSOFile(
-        d["metadata"]["version"],
-        d["metadata"]["julia"],
+        string(d["metadata"]["version"]),
+        string(d["metadata"]["julia"]),
         d["metadata"]["format"],
         d["metadata"]["compression"],
         d["metadata"]["image"],
-        d["metadata"]["pkgs"],
+        d["metadata"]["project_toml"],
+        d["metadata"]["manifest_toml"],
         d["objects"],
     )
 end
 
 function upgrade_jlso!(raw_dict::AbstractDict)
     metadata = raw_dict["metadata"]
-    if metadata["version"] ∈ semver_spec("1")
+
+    version = if isa(metadata["version"], VersionNumber)
+        metadata["version"]
+    else
+        VersionNumber(metadata["version"])
+    end
+
+    if version ∈ semver_spec("1")
         if metadata["format"] == :serialize
             metadata["format"] = :julia_serialize
         end
         metadata["compression"] = :none
-        metadata["version"] = v"2"
+        metadata["version"] = v"3"
     end
+
+    # If the dict is using the deprecated pkgs then update to the project
+    # and manifest toml values.
+    if haskey(metadata, "pkgs")
+        project, manifest = _env(metadata["pkgs"])
+        metadata["project_toml"] = project
+        metadata["manifest_toml"] = manifest
+        metadata["version"] = v"3"
+    end
+
     return raw_dict
 end
 
