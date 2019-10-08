@@ -117,10 +117,7 @@ function Base.getproperty(jlso::JLSOFile, attr::Symbol)
         return Pkg.TOML.parse(jlso.manifest_toml)
     elseif attr === :project
         return Pkg.TOML.parse(jlso.manifest_toml)
-    elseif attr === :separator
-        return POSIX_PATH_SEPARATOR
     else
         return getfield(jlso, attr)
     end
 end
-# TODO: Include a more detail summary method for displaying version information.

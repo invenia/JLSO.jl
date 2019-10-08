@@ -42,6 +42,7 @@ end
 function upgrade_jlso!(raw_dict::AbstractDict)
     metadata = raw_dict["metadata"]
 
+    # v1 and v2 stored version numbers but v3 stores strings
     version = if isa(metadata["version"], VersionNumber)
         metadata["version"]
     else
