@@ -55,7 +55,7 @@ function _env(pkgs::Dict)
             Pkg.activate(tmp)
 
             for (key, value) in pkgs
-                Pkg.add(Pkg.PackageSpec(key, value))
+                Pkg.add(Pkg.PackageSpec(; name=key, version=value))
             end
 
             return _env()
