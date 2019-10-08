@@ -1,6 +1,7 @@
 # Serialize "Hello World!" on julia 0.5.2 (not supported)
 const img = JLSO._image()
 const pkgs = JLSO._pkgs()
+const project, manifest = JLSO._env()
 const hw_5 = UInt8[
     0x26, 0x15, 0x87, 0x48, 0x65,
     0x6c, 0x6c, 0x6f, 0x20, 0x57,

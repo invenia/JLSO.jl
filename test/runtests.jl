@@ -5,6 +5,7 @@ using InteractiveUtils
 using Memento
 using Random
 using Serialization
+using Suppressor
 using Test
 
 using JLSO
