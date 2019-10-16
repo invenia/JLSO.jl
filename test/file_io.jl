@@ -7,6 +7,13 @@
         seekstart(io)
 
         result = read(io, JLSOFile)
+        @test result.version == orig.version
+        @test result.julia == orig.julia
+        @test result.image == orig.image
+        @test result.manifest == orig.manifest
+        @test result.format == orig.format
+        @test result.compression == orig.compression
+        @test result.objects == orig.objects
         @test result == orig
     end
 end
@@ -67,19 +74,19 @@ end
                 bytes = take!(io)
 
                 jlso = JLSOFile(
-                    "3.0",
-                    string(VERSION),
+                    v"3.0",
+                    VERSION,
                     :julia_serialize,
                     :none,
                     img,
                     project,
                     manifest,
-                    Dict("data" => bytes),
+                    Dict(:data => bytes),
                 )
 
                 # Test failing to deserailize data because of missing modules will
                 # still return the raw bytes
-                result = @test_warn(LOGGER, r"KeyError*", jlso["data"])
+                result = @test_warn(LOGGER, r"KeyError*", jlso[:data])
                 @test result == bytes
             end
 
@@ -89,7 +96,7 @@ end
                     bson(
                         io,
                         Dict(
-                            "data" => AxisArray(
+                            :data => AxisArray(
                                 rand(20, 10),
                                 Axis{:time}(14010:10:14200),
                                 Axis{:id}(1:10)
@@ -103,14 +110,14 @@ end
                 bytes = take!(io)
 
                 jlso = JLSOFile(
-                    "3.0",
-                    string(VERSION),
+                    v"3.0",
+                    VERSION,
                     :bson,
                     :none,
                     img,
                     project,
                     manifest,
-                    Dict("data" => bytes),
+                    Dict(:data => bytes),
                 )
 
                 # Test failing to deserailize data because of missing modules will

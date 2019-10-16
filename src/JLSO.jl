@@ -88,6 +88,9 @@ using Memento
 using Pkg: Pkg
 using Pkg.Types: semver_spec
 
+# We need to import these cause of a deprecation on object index via strings.
+import Base: getindex, setindex!
+
 export JLSOFile
 
 const READABLE_VERSIONS = semver_spec("1, 2, 3")
@@ -97,6 +100,7 @@ const LOGGER = getlogger(@__MODULE__)
 __init__() = Memento.register(LOGGER)
 
 include("JLSOFile.jl")
+include("deprecated.jl")
 include("file_io.jl")
 include("metadata.jl")
 include("serialization.jl")

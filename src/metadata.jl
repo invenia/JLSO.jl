@@ -45,26 +45,6 @@ function _env()
     return (_CACHE[:PROJECT], _CACHE[:MANIFEST])
 end
 
-# Used to convert the old "PkgName" => VersionNumber metadata to a
-# Project.toml and Manifest.toml file.
-function _env(pkgs::Dict)
-    src_env = Base.active_project()
-
-    try
-        mktempdir() do tmp
-            Pkg.activate(tmp)
-
-            for (key, value) in pkgs
-                Pkg.add(Pkg.PackageSpec(; name=key, version=value))
-            end
-
-            return _env()
-        end
-    finally
-        Pkg.activate(src_env)
-    end
-end
-
 function _image()
     if isempty(_CACHE[:IMAGE]) && haskey(ENV, "JLSO_IMAGE")
         return ENV["JLSO_IMAGE"]

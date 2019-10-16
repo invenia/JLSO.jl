@@ -27,7 +27,7 @@ end
 end
 
 @testset "show" begin
-    jlso = JLSOFile(datas["String"])
+    jlso = JLSOFile(datas[:String])
     expected = string(
         "JLSOFile([data]; version=v\"2.0.0\", julia=v\"$VERSION\", ",
         "format=:julia_serialize, image=\"\")"

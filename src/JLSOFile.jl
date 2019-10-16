@@ -1,28 +1,13 @@
 struct JLSOFile
-    version::String
-    julia::String
+    version::VersionNumber
+    julia::VersionNumber
     format::Symbol
     compression::Symbol
     image::String
-    project_toml::String
-    manifest_toml::String
-    objects::Dict{String, Vector{UInt8}}
+    project::Dict{String, Any}
+    manifest::Dict{String, Any}
+    objects::Dict{Symbol, Vector{UInt8}}
 end
-
-@deprecate(
-    JLSOFile(
-        version::VersionNumber,
-        julia::VersionNumber,
-        format::Symbol,
-        compression::Symbol,
-        image::String,
-        pkgs::Dict{String, VersionNumber},
-        objects::Dict{String, Vector{UInt8}},
-    ),
-    JLSOFile(
-        string(version), string(julia), format, compression, image, _env(pkgs)..., objects,
-    )
-)
 
 """
     JLSOFile(data; format=:julia_serialize, compression=:gzip, kwargs...)
@@ -47,9 +32,9 @@ Stores the information needed to write a .jlso file.
     Due to the time taken for disk IO, :none is not normally as fast as using some compression.
 """
 function JLSOFile(
-    data::Dict{String, <:Any};
-    version="3.0.0",
-    julia=string(VERSION),
+    data::Dict{Symbol, <:Any};
+    version=v"3",
+    julia=VERSION,
     format=:julia_serialize,
     compression=:gzip,
     image=_image(),
@@ -61,8 +46,15 @@ function JLSOFile(
     end
 
     _versioncheck(version, WRITEABLE_VERSIONS)
-    objects = Dict{String, Vector{UInt8}}()
-    jlso = JLSOFile(version, julia, format, compression, image, _env()..., objects)
+    jlso = JLSOFile(
+        version,
+        julia,
+        format,
+        compression,
+        image,
+        Pkg.TOML.parse.(_env())...,
+        Dict{Symbol, Vector{UInt8}}()
+    )
 
     for (key, val) in data
         jlso[key] = val
@@ -71,8 +63,26 @@ function JLSOFile(
     return jlso
 end
 
-JLSOFile(data; kwargs...) = JLSOFile(Dict("data" => data); kwargs...)
-JLSOFile(data::Pair...; kwargs...) = JLSOFile(Dict(data...); kwargs...)
+function JLSOFile(;
+    version=v"3",
+    julia=VERSION,
+    format=:julia_serialize,
+    compression=:gzip,
+    image=_image(),
+    kwargs...
+)
+    return JLSOFile(
+        Dict(kwargs);
+        version=version,
+        julia=julia,
+        format=format,
+        compression=compression,
+        image=image
+    )
+end
+
+
+JLSOFile(data::Pair...; kwargs...) = JLSOFile(Dict(data); kwargs...)
 
 function Base.show(io::IO, jlso::JLSOFile)
     variables = join(names(jlso), ", ")
@@ -95,7 +105,7 @@ function Base.:(==)(a::JLSOFile, b::JLSOFile)
         a.version == b.version &&
         a.julia == b.julia &&
         a.image == b.image &&
-        a.manifest_toml == b.manifest_toml &&
+        a.manifest == b.manifest &&
         a.format == b.format &&
         a.compression == b.compression &&
         a.objects == b.objects
@@ -105,18 +115,13 @@ end
 Base.names(jlso::JLSOFile) = collect(keys(jlso.objects))
 function Base.getproperty(jlso::JLSOFile, attr::Symbol)
     if attr === :pkgs
-        @warn "pkgs property is deprecated, use manifest or manifest_toml"
-        manifest = Pkg.TOML.parse(jlso.manifest_toml)
+        @warn "pkgs property is deprecated, use .manifest instead"
         results = Dict{String, VersionNumber}()
-        for (name, pkg) in manifest
+        for (name, pkg) in jlso.manifest
             results[name] = get(first(pkg), "version", v"0.0.0")
         end
 
         return results
-    elseif attr === :manifest
-        return Pkg.TOML.parse(jlso.manifest_toml)
-    elseif attr === :project
-        return Pkg.TOML.parse(jlso.manifest_toml)
     else
         return getfield(jlso, attr)
     end
