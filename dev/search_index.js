@@ -37,11 +37,11 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "JLSO.JLSO",
     "category": "module",
-    "text": "A julia serialized object (JLSO) file format for storing checkpoint data.\n\nStructure\n\nThe .jlso files are BSON files containing the dictionaries with a specific schema. NOTE: The raw dictionary should be loadable by any BSON library even if serialized objects themselves aren\'t reconstructable.\n\nExample)\n\nDict(\n    \"metadata\" => Dict(\n        \"version\" => v\"2.0\",\n        \"julia\" => v\"1.0.4\",\n        \"format\" => :bson,  # Could also be :julia_serialize\n        \"compression\" => :gzip_fastest, # could also be: :none, :gzip_smallest, or :gzip\n        \"image\" => \"xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/myrepository:latest\"\n        \"pkgs\" => Dict(\n            \"AxisArrays\" => v\"0.2.1\",\n            ...\n        )\n    ),\n    \"objects\" => Dict(\n        \"var1\" => [0x35, 0x10, 0x01, 0x04, 0x44],\n        \"var2\" => [...],\n    ),\n)\n\nWARNING: Regardless of serialization format, the serialized objects can not be deserialized into structures with different fields, or if the types have been renamed or removed from the packages. Further, the :julia_serialize format is not intended for long term storage and is not portable across julia versions. As a result, we\'re storing the serialized object data in a json file which should also be able to load the docker image and versioninfo to allow reconstruction.\n\n\n\n\n\n"
+    "text": "A julia serialized object (JLSO) file format for storing checkpoint data.\n\nStructure\n\nThe .jlso files are BSON files containing the dictionaries with a specific schema. NOTE: The raw dictionary should be loadable by any BSON library even if serialized objects themselves aren\'t reconstructable.\n\nExample)\n\nDict(\n    \"metadata\" => Dict(\n        \"version\" => v\"2.0\",\n        \"julia\" => v\"1.0.4\",\n        \"format\" => :bson,  # Could also be :julia_serialize\n        \"compression\" => :gzip_fastest, # could also be: :none, :gzip_smallest, or :gzip\n        \"image\" => \"xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/myrepository:latest\"\n        \"project\" => Dict{String, Any}(...),\n        \"manifest\" => Dict{String, Any}(...),\n    ),\n    \"objects\" => Dict(\n        \"var1\" => [0x35, 0x10, 0x01, 0x04, 0x44],\n        \"var2\" => [...],\n    ),\n)\n\nWARNING: Regardless of serialization format, the serialized objects can not be deserialized into structures with different fields, or if the types have been renamed or removed from the packages. Further, the :julia_serialize format is not intended for long term storage and is not portable across julia versions. As a result, we\'re storing the serialized object data in a json file which should also be able to load the docker image and versioninfo to allow reconstruction.\n\n\n\n\n\n"
 },
 
 {
-    "location": "api/#JLSO.JLSOFile-Tuple{Dict{String,#s29} where #s29}",
+    "location": "api/#JLSO.JLSOFile-Tuple{Dict{Symbol,#s30} where #s30}",
     "page": "API",
     "title": "JLSO.JLSOFile",
     "category": "method",
@@ -49,11 +49,27 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "api/#Base.getindex-Tuple{JLSOFile,Symbol}",
+    "page": "API",
+    "title": "Base.getindex",
+    "category": "method",
+    "text": "getindex(jlso, name)\n\nReturns the deserialized object with the specified name.\n\n\n\n\n\n"
+},
+
+{
+    "location": "api/#Base.setindex!-Tuple{JLSOFile,Any,Symbol}",
+    "page": "API",
+    "title": "Base.setindex!",
+    "category": "method",
+    "text": "setindex!(jlso, value, name)\n\nAdds the object to the file and serializes it.\n\n\n\n\n\n"
+},
+
+{
     "location": "api/#JLSO.load-Tuple{String,Vararg{Any,N} where N}",
     "page": "API",
     "title": "JLSO.load",
     "category": "method",
-    "text": "load(io, objects...) -> Dict{String, Any}\nload(path, objects...) -> Dict{String, Any}\n\nLoad the JLSOFile from the io and deserialize the specified objects. If no object names are specified then all objects in the file are returned.\n\n\n\n\n\n"
+    "text": "load(io, objects...) -> Dict{Symbol, Any}\nload(path, objects...) -> Dict{Symbol, Any}\n\nLoad the JLSOFile from the io and deserialize the specified objects. If no object names are specified then all objects in the file are returned.\n\n\n\n\n\n"
 },
 
 {
@@ -62,22 +78,6 @@ var documenterSearchIndex = {"docs": [
     "title": "JLSO.save",
     "category": "method",
     "text": "save(io, data)\nsave(path, data)\n\nCreates a JLSOFile with the specified data and kwargs and writes it back to the io.\n\n\n\n\n\n"
-},
-
-{
-    "location": "api/#Base.getindex-Tuple{JLSOFile,String}",
-    "page": "API",
-    "title": "Base.getindex",
-    "category": "method",
-    "text": "getindex(jlso, name)\n\nReturns the deserialized object with the specified name.\n\n\n\n\n\n"
-},
-
-{
-    "location": "api/#Base.setindex!-Tuple{JLSOFile,Any,String}",
-    "page": "API",
-    "title": "Base.setindex!",
-    "category": "method",
-    "text": "setindex!(jlso, value, name)\n\nAdds the object to the file and serializes it.\n\n\n\n\n\n"
 },
 
 {
