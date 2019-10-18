@@ -26,7 +26,6 @@ decompress(::Compressor{:gzip_fastest}, io) = GzipDecompressorStream(io)
 compress(::Compressor{:gzip_smallest}, io) = GzipCompressorStream(io; level=9)
 decompress(::Compressor{:gzip_smallest}, io) = GzipDecompressorStream(io)
 
-
 """
     complete_compression(compressing_buffer)
 Writes any end of compression sequence to the compressing buffer;
@@ -47,7 +46,7 @@ end
 
 Returns the deserialized object with the specified name.
 """
-function Base.getindex(jlso::JLSOFile, name::String)
+function getindex(jlso::JLSOFile, name::Symbol)
     try
         buffer = IOBuffer(jlso.objects[name])
         decompressing_buffer = decompress(jlso.compression, buffer)
@@ -63,7 +62,7 @@ end
 
 Adds the object to the file and serializes it.
 """
-function Base.setindex!(jlso::JLSOFile, value, name::String)
+function setindex!(jlso::JLSOFile, value, name::Symbol)
     buffer = IOBuffer()
     compressing_buffer = compress(jlso.compression, buffer)
     serialize(jlso.format, compressing_buffer, value)

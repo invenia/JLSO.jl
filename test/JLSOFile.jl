@@ -16,6 +16,12 @@
 
         @test jlso.objects[k] == expected
     end
+
+    @testset "kwarg constructor" begin
+        jlso = JLSOFile(; a=collect(1:10), b="hello")
+        @test jlso[:b] == "hello"
+        @test haskey(jlso.pkgs, "BSON")
+    end
 end
 
 @testset "unknown format" begin
@@ -27,7 +33,7 @@ end
 end
 
 @testset "show" begin
-    jlso = JLSOFile(datas["String"])
+    jlso = JLSOFile(datas[:String])
     expected = string(
         "JLSOFile([data]; version=v\"2.0.0\", julia=v\"$VERSION\", ",
         "format=:julia_serialize, image=\"\")"
