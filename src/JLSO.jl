@@ -16,8 +16,10 @@ Dict(
         "format" => :bson,  # Could also be :julia_serialize
         "compression" => :gzip_fastest, # could also be: :none, :gzip_smallest, or :gzip
         "image" => "xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/myrepository:latest"
-        "project" => Dict{String, Any}(...),
-        "manifest" => Dict{String, Any}(...),
+        "pkgs" => Dict(
+            "AxisArrays" => v"0.2.1",
+            ...
+        )
     ),
     "objects" => Dict(
         "var1" => [0x35, 0x10, 0x01, 0x04, 0x44],
@@ -42,19 +44,15 @@ using Memento
 using Pkg: Pkg
 using Pkg.Types: semver_spec
 
-# We need to import these cause of a deprecation on object index via strings.
-import Base: getindex, setindex!
-
 export JLSOFile
 
-const READABLE_VERSIONS = semver_spec("1, 2, 3")
-const WRITEABLE_VERSIONS = semver_spec("3")
+const READABLE_VERSIONS = semver_spec("1, 2")
+const WRITEABLE_VERSIONS = semver_spec("2")
 
 const LOGGER = getlogger(@__MODULE__)
 __init__() = Memento.register(LOGGER)
 
 include("JLSOFile.jl")
-include("deprecated.jl")
 include("file_io.jl")
 include("metadata.jl")
 include("serialization.jl")

@@ -4,9 +4,8 @@ struct JLSOFile
     format::Symbol
     compression::Symbol
     image::String
-    project::Dict{String, Any}
-    manifest::Dict{String, Any}
-    objects::Dict{Symbol, Vector{UInt8}}
+    pkgs::Dict{String, VersionNumber}
+    objects::Dict{String, Vector{UInt8}}
 end
 
 """
@@ -32,8 +31,8 @@ Stores the information needed to write a .jlso file.
     Due to the time taken for disk IO, :none is not normally as fast as using some compression.
 """
 function JLSOFile(
-    data::Dict{Symbol, <:Any};
-    version=v"3",
+    data::Dict{String, <:Any};
+    version=v"2.0.0",
     julia=VERSION,
     format=:julia_serialize,
     compression=:gzip,
@@ -46,17 +45,8 @@ function JLSOFile(
     end
 
     _versioncheck(version, WRITEABLE_VERSIONS)
-    project_toml, manifest_toml = _env()
-    jlso = JLSOFile(
-        version,
-        julia,
-        format,
-        compression,
-        image,
-        Pkg.TOML.parse(project_toml),
-        Pkg.TOML.parse(manifest_toml),
-        Dict{Symbol, Vector{UInt8}}(),
-    )
+    objects = Dict{String, Vector{UInt8}}()
+    jlso = JLSOFile(version, julia, format, compression, image, _pkgs(), objects)
 
     for (key, val) in data
         jlso[key] = val
@@ -65,33 +55,15 @@ function JLSOFile(
     return jlso
 end
 
-function JLSOFile(;
-    version=v"3",
-    julia=VERSION,
-    format=:julia_serialize,
-    compression=:gzip,
-    image=_image(),
-    kwargs...
-)
-    return JLSOFile(
-        Dict(kwargs);
-        version=version,
-        julia=julia,
-        format=format,
-        compression=compression,
-        image=image,
-    )
-end
-
-
-JLSOFile(data::Pair...; kwargs...) = JLSOFile(Dict(data); kwargs...)
+JLSOFile(data; kwargs...) = JLSOFile(Dict("data" => data); kwargs...)
+JLSOFile(data::Pair...; kwargs...) = JLSOFile(Dict(data...); kwargs...)
 
 function Base.show(io::IO, jlso::JLSOFile)
     variables = join(names(jlso), ", ")
     kwargs = join(
         [
-            "version=\"$(jlso.version)\"",
-            "julia=\"$(jlso.julia)\"",
+            "version=v\"$(jlso.version)\"",
+            "julia=v\"$(jlso.julia)\"",
             "format=:$(jlso.format)",
             "compression=:$(jlso.compression)",
             "image=\"$(jlso.image)\"",
@@ -107,7 +79,7 @@ function Base.:(==)(a::JLSOFile, b::JLSOFile)
         a.version == b.version &&
         a.julia == b.julia &&
         a.image == b.image &&
-        a.manifest == b.manifest &&
+        a.pkgs == b.pkgs &&
         a.format == b.format &&
         a.compression == b.compression &&
         a.objects == b.objects
@@ -115,14 +87,5 @@ function Base.:(==)(a::JLSOFile, b::JLSOFile)
 end
 
 Base.names(jlso::JLSOFile) = collect(keys(jlso.objects))
-function Base.getproperty(jlso::JLSOFile, attr::Symbol)
-    if attr === :pkgs
-        @warn "pkgs property is deprecated, use .manifest instead"
-        return Dict(
-            name => VersionNumber(get(first(spec), "version", "0.0.0"))
-            for (name, spec) in jlso.manifest
-        )
-    else
-        return getfield(jlso, attr)
-    end
-end
+
+# TODO: Include a more detail summary method for displaying version information.

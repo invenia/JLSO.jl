@@ -8,14 +8,9 @@ function _versioncheck(version::VersionNumber, valid_versions)
     ))
 end
 
-function _versioncheck(version::String, valid_versions)
-    return _versioncheck(VersionNumber(version), valid_versions)
-end
 
 # Cache of the versioninfo and image, so we don't compute these every time.
 const _CACHE = Dict(
-    :MANIFEST => "",
-    :PROJECT => "",
     :PKGS => Dict{String, VersionNumber}(),
     :IMAGE => "",
 )
@@ -31,18 +26,6 @@ function _pkgs()
     end
 
     return _CACHE[:PKGS]
-end
-
-function _env()
-    if isempty(_CACHE[:PROJECT]) && isempty(_CACHE[:MANIFEST])
-        _CACHE[:PROJECT] = read(Base.active_project(), String)
-        _CACHE[:MANIFEST] = read(
-            joinpath(dirname(Base.active_project()), "Manifest.toml"),
-            String
-        )
-    end
-
-    return (_CACHE[:PROJECT], _CACHE[:MANIFEST])
 end
 
 function _image()
