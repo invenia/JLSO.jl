@@ -97,9 +97,9 @@ function _upgrade_env(pkgs::Dict)
         mktempdir() do tmp
             Pkg.activate(tmp)
 
-            for (key, value) in pkgs
-                Pkg.add(Pkg.PackageSpec(; name=key, version=value))
-            end
+            # We construct an array of PackageSpecs to avoid ordering problems with adding
+            # each package individually
+            Pkg.add([Pkg.PackageSpec(; name=key, version=value) for (key, value) in pkgs])
 
             return _env()
         end
