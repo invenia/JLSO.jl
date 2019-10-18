@@ -25,10 +25,16 @@ end
         @test jlso["data"] == v
     end
 
-    @testset "unsupported julia version $_version" for _version in (v"1.0", v"2.0")
+    @testset "unsupported julia version $jlso_version" for jlso_version in (v"1.0", v"2.0")
         jlso = @suppress_out begin
             JLSOFile(
-                _version, VERSION, :julia_serialize, :none, img, pkgs, Dict("data" => hw_5),
+                jlso_version,
+                VERSION,
+                :julia_serialize,
+                :none,
+                img,
+                pkgs,
+                Dict("data" => hw_5),
             )
         end
 

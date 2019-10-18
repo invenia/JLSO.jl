@@ -46,14 +46,16 @@ function JLSOFile(
     end
 
     _versioncheck(version, WRITEABLE_VERSIONS)
+    project_toml, manifest_toml = _env()
     jlso = JLSOFile(
         version,
         julia,
         format,
         compression,
         image,
-        Pkg.TOML.parse.(_env())...,
-        Dict{Symbol, Vector{UInt8}}()
+        Pkg.TOML.parse(project_toml),
+        Pkg.TOML.parse(manifest_toml),
+        Dict{Symbol, Vector{UInt8}}(),
     )
 
     for (key, val) in data
