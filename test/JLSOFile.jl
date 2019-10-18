@@ -16,6 +16,12 @@
 
         @test jlso.objects[k] == expected
     end
+
+    @testset "kwarg constructor" begin
+        jlso = JLSOFile(; a=collect(1:10), b="hello")
+        @test jlso[:b] == "hello"
+        @test haskey(jlso.pkgs, "BSON")
+    end
 end
 
 @testset "unknown format" begin

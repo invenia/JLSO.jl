@@ -79,7 +79,7 @@ function JLSOFile(;
         julia=julia,
         format=format,
         compression=compression,
-        image=image
+        image=image,
     )
 end
 
@@ -118,12 +118,10 @@ Base.names(jlso::JLSOFile) = collect(keys(jlso.objects))
 function Base.getproperty(jlso::JLSOFile, attr::Symbol)
     if attr === :pkgs
         @warn "pkgs property is deprecated, use .manifest instead"
-        results = Dict{String, VersionNumber}()
-        for (name, pkg) in jlso.manifest
-            results[name] = get(first(pkg), "version", v"0.0.0")
-        end
-
-        return results
+        return Dict(
+            name => VersionNumber(get(first(spec), "version", "0.0.0"))
+            for (name, spec) in jlso.manifest
+        )
     else
         return getfield(jlso, attr)
     end
