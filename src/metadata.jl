@@ -54,7 +54,7 @@ function _image()
 end
 
 function Pkg.activate(jlso::JLSOFile, path=tempdir(); kwargs...)
-    ispath(path) || mkpath(path)
+    mkpath(path)
     open(io -> Pkg.TOML.print(io, jlso.project), joinpath(path, "Project.toml"), "w")
     open(io -> Pkg.TOML.print(io, jlso.manifest), joinpath(path, "Manifest.toml"), "w")
     Pkg.activate(path; kwargs...)
