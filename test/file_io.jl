@@ -40,7 +40,12 @@ end
 
         # Test failing to deserialize data because of incompatible julia versions
         # will return the raw bytes
-        result = @test_warn(LOGGER, r"MethodError*", jlso["data"])
+        result = if VERSION < v"1.2"
+            @test_warn(LOGGER, r"MethodError*", jlso["data"])
+        else
+            @test_warn(LOGGER, r"TypeError*", jlso["data"])
+        end
+
         @test result == hw_5
 
         # TODO: Test that BSON works across julia versions using external files?

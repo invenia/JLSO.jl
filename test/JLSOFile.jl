@@ -40,3 +40,18 @@ end
     )
     @test sprint(show, jlso) == sprint(print, jlso)
 end
+
+@testset "activate" begin
+    jlso = JLSOFile(datas[:String])
+    mktempdir() do d
+        Pkg.activate(jlso, d) do
+            @show Base.active_project()
+        end
+
+        @test ispath(joinpath(d, "Project.toml"))
+        @test ispath(joinpath(d, "Manifest.toml"))
+
+        @test Pkg.TOML.parsefile(joinpath(d, "Project.toml")) == jlso.project
+        @test Pkg.TOML.parsefile(joinpath(d, "Manifest.toml")) == jlso.manifest
+    end
+end
