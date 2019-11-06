@@ -19,14 +19,10 @@ julia = "0.7, 1.0"
 [extras]
 AxisArrays = "39de3d68-74b9-583c-8d2d-e117c070f3a9"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
-Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
-InteractiveUtils = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
-Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Suppressor = "fd094767-a336-5f1f-9728-57cf17d0bbfb"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 TimeZones = "f269a46b-ccf7-5d73-abea-4c690281aa53"
 
 [targets]
-test = ["AxisArrays", "DataFrames", "Dates", "Distributed", "Distributions", "InteractiveUtils", "Random", "Suppressor", "Test", "TimeZones"]
+test = ["AxisArrays", "DataFrames", "Distributions", "Suppressor", "Test", "TimeZones"]

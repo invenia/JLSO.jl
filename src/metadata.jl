@@ -52,20 +52,3 @@ function _image()
 
     return _CACHE[:IMAGE]
 end
-
-function Pkg.activate(jlso::JLSOFile, path=tempdir(); kwargs...)
-    mkpath(path)
-    open(io -> Pkg.TOML.print(io, jlso.project), joinpath(path, "Project.toml"), "w")
-    open(io -> Pkg.TOML.print(io, jlso.manifest), joinpath(path, "Manifest.toml"), "w")
-    Pkg.activate(path; kwargs...)
-end
-
-function Pkg.activate(f::Function, jlso::JLSOFile, path=tempdir(); kwargs...)
-    curr_env = dirname(Base.active_project())
-    try
-        Pkg.activate(jlso, path; kwargs...)
-        f()
-    finally
-        Pkg.activate(curr_env)
-    end
-end

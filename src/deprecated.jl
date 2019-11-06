@@ -97,21 +97,9 @@ function _upgrade_env(pkgs::Dict)
         mktempdir() do tmp
             Pkg.activate(tmp)
 
-            # We construct an array of PackageSpecs to avoid ordering problems with
-            # adding each package individually
-            try
-                Pkg.add([
-                    Pkg.PackageSpec(; name=key, version=value) for (key, value) in pkgs
-                ])
-            catch e
-                # Warn about failure and fallback to simply trying to install the pacakges
-                # without version constraints.
-                warn(LOGGER) do
-                    "Failed to construct an environment with the provide package version " *
-                    "($pkgs): $e.\n Falling back to simply adding the packages."
-                end
-                Pkg.add([Pkg.PackageSpec(; name=key) for (key, value) in pkgs])
-            end
+            # We construct an array of PackageSpecs to avoid ordering problems with adding
+            # each package individually
+            Pkg.add([Pkg.PackageSpec(; name=key, version=value) for (key, value) in pkgs])
 
             return _env()
         end

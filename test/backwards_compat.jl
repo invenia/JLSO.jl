@@ -25,29 +25,6 @@
             @test isempty(new_d["metadata"]["manifest"])
             @test isempty(new_d["objects"])
         end
-
-        @testset "Invalid VersionNumber" begin
-            d = Dict(
-                "metadata" => Dict(
-                    "version" => v"1.0", "format" => :bson,
-                    # We don't intend to go back an make a 0.3.14 release at any point.
-                    "pkgs" => merge(pkgs, Dict("JLSO" => v"0.3.14")),
-                )
-            )
-
-            new_d = @suppress_out upgrade_jlso(d)
-            @test !isempty(new_d["metadata"]["project"])
-            @test !isempty(new_d["metadata"]["manifest"])
-
-            # Test that the project.toml has the JLSO dep, but not a specific version
-            # (fallback when package versions don't exist in the registry)
-            _project = Pkg.TOML.parse(new_d["metadata"]["project"])
-            @test haskey(_project, "deps")
-            @test haskey(_project["deps"], "JLSO")
-            @test haskey(_project, "compat")
-            # Check that the compat section doesn't have our package version
-            @test !haskey(_project["compat"], "JLSO")
-        end
     end
 end
 
