@@ -4,30 +4,18 @@
 
 function Base.write(io::IO, jlso::JLSOFile)
     _versioncheck(jlso.version, WRITEABLE_VERSIONS)
-
-    # Setup an IOBuffer for serializing the manifest
-    project_toml = sprint(Pkg.TOML.print, jlso.project)
-    # @show jlso.manifest
-    manifest_toml = read(
-        compress(jlso.compression, IOBuffer(sprint(Pkg.TOML.print, jlso.manifest)))
-    )
-
     bson(
         io,
-        # We declare the dict types to be more explicit about the output format.
-        Dict{String, Dict}(
-            "metadata" => Dict{String, Union{String, Vector{UInt8}}}(
-                "version" => string(jlso.version),
-                "julia" => string(jlso.julia),
-                "format" => string(jlso.format),
-                "compression" => string(jlso.compression),
+        Dict(
+            "metadata" => Dict(
+                "version" => jlso.version,
+                "julia" => jlso.julia,
+                "format" => jlso.format,
+                "compression" => jlso.compression,
                 "image" => jlso.image,
-                "project" => project_toml,
-                "manifest" => manifest_toml,
+                "pkgs" => jlso.pkgs,
             ),
-            "objects" => Dict{String, Vector{UInt8}}(
-                string(k) => v for (k, v) in jlso.objects
-            ),
+            "objects" => jlso.objects,
         )
     )
 end
@@ -35,35 +23,32 @@ end
 # `read`, unlike `load` does not deserialize any of the objects within the JLSO file,
 # they will be `deserialized` when they are indexed out of the returned JSLOFile object.
 function Base.read(io::IO, ::Type{JLSOFile})
-    parsed = BSON.load(io)
-    _versioncheck(parsed["metadata"]["version"], READABLE_VERSIONS)
-    d = upgrade_jlso(parsed)
-    compression = Symbol(d["metadata"]["compression"])
-
-    # Try decompressing the manifest, otherwise just return a dict with the raw data
-    manifest = try
-        Pkg.TOML.parse(
-            read(
-                decompress(compression, IOBuffer(d["metadata"]["manifest"])),
-                String
-            )
-        )
-    catch e
-        warn(LOGGER, e)
-        Dict("raw" => d["metadata"]["manifest"])
-    end
-
+    d = BSON.load(io)
+    _versioncheck(d["metadata"]["version"], READABLE_VERSIONS)
+    upgrade_jlso!(d)
     return JLSOFile(
-        VersionNumber(d["metadata"]["version"]),
-        VersionNumber(d["metadata"]["julia"]),
-        Symbol(d["metadata"]["format"]),
-        compression,
+        d["metadata"]["version"],
+        d["metadata"]["julia"],
+        d["metadata"]["format"],
+        d["metadata"]["compression"],
         d["metadata"]["image"],
-        Pkg.TOML.parse(d["metadata"]["project"]),
-        manifest,
-        Dict{Symbol, Vector{UInt8}}(Symbol(k) => v for (k, v) in d["objects"]),
+        d["metadata"]["pkgs"],
+        d["objects"],
     )
 end
+
+function upgrade_jlso!(raw_dict::AbstractDict)
+    metadata = raw_dict["metadata"]
+    if metadata["version"] ∈ semver_spec("1")
+        if metadata["format"] == :serialize
+            metadata["format"] = :julia_serialize
+        end
+        metadata["compression"] = :none
+        metadata["version"] = v"2"
+    end
+    return raw_dict
+end
+
 
 """
     save(io, data)
@@ -76,8 +61,8 @@ save(io::IO, data::Pair...; kwargs...) = save(io, Dict(data...); kwargs...)
 save(path::String, args...; kwargs...) = open(io -> save(io, args...; kwargs...), path, "w")
 
 """
-    load(io, objects...) -> Dict{Symbol, Any}
-    load(path, objects...) -> Dict{Symbol, Any}
+    load(io, objects...) -> Dict{String, Any}
+    load(path, objects...) -> Dict{String, Any}
 
 Load the JLSOFile from the io and deserialize the specified objects.
 If no object names are specified then all objects in the file are returned.
@@ -86,7 +71,7 @@ load(path::String, args...) = open(io -> load(io, args...), path)
 function load(io::IO, objects::String...)
     jlso = read(io, JLSOFile)
     objects = isempty(objects) ? names(jlso) : objects
-    result = Dict{Symbol, Any}()
+    result = Dict{String, Any}()
 
     for o in objects
         # Note that calling getindex on the jlso triggers the deserialization of the object

@@ -7,13 +7,6 @@
         seekstart(io)
 
         result = read(io, JLSOFile)
-        @test result.version == orig.version
-        @test result.julia == orig.julia
-        @test result.image == orig.image
-        @test result.manifest == orig.manifest
-        @test result.format == orig.format
-        @test result.compression == orig.compression
-        @test result.objects == orig.objects
         @test result == orig
     end
 end
@@ -25,27 +18,12 @@ end
         @test jlso["data"] == v
     end
 
-    @testset "unsupported julia version $jlso_version" for jlso_version in (v"1.0", v"2.0")
-        jlso = @suppress_out begin
-            JLSOFile(
-                jlso_version,
-                VERSION,
-                :julia_serialize,
-                :none,
-                img,
-                pkgs,
-                Dict("data" => hw_5),
-            )
-        end
+    @testset "unsupported julia version" begin
+        jlso = JLSOFile(v"1.0", VERSION, :julia_serialize, :none, img, pkgs, Dict("data" => hw_5))
 
         # Test failing to deserialize data because of incompatible julia versions
         # will return the raw bytes
-        result = if VERSION < v"1.2"
-            @test_warn(LOGGER, r"MethodError*", jlso["data"])
-        else
-            @test_warn(LOGGER, r"TypeError*", jlso["data"])
-        end
-
+        result = @test_warn(LOGGER, r"MethodError*", jlso["data"])
         @test result == hw_5
 
         # TODO: Test that BSON works across julia versions using external files?
@@ -85,19 +63,12 @@ end
                 bytes = take!(io)
 
                 jlso = JLSOFile(
-                    v"3.0",
-                    VERSION,
-                    :julia_serialize,
-                    :none,
-                    img,
-                    project,
-                    manifest,
-                    Dict(:data => bytes),
+                    v"2.0", VERSION, :julia_serialize, :none, img, pkgs, Dict("data" => bytes)
                 )
 
                 # Test failing to deserailize data because of missing modules will
                 # still return the raw bytes
-                result = @test_warn(LOGGER, r"KeyError*", jlso[:data])
+                result = @test_warn(LOGGER, r"KeyError*", jlso["data"])
                 @test result == bytes
             end
 
@@ -107,7 +78,7 @@ end
                     bson(
                         io,
                         Dict(
-                            :data => AxisArray(
+                            "data" => AxisArray(
                                 rand(20, 10),
                                 Axis{:time}(14010:10:14200),
                                 Axis{:id}(1:10)
@@ -121,14 +92,7 @@ end
                 bytes = take!(io)
 
                 jlso = JLSOFile(
-                    v"3.0",
-                    VERSION,
-                    :bson,
-                    :none,
-                    img,
-                    project,
-                    manifest,
-                    Dict(:data => bytes),
+                    v"1.0", VERSION, :bson, :none, img, pkgs, Dict("data" => bytes)
                 )
 
                 # Test failing to deserailize data because of missing modules will
