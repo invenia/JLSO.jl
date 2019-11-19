@@ -27,6 +27,8 @@ const datas = Dict(
     :Distribution => Normal(50.2, 4.3),
 )
 
+const load_datas = Dict(String(k) => v for (k, v) in datas)
+
 #==
 for format in (:bson, :julia_serialize)
     for compression in (:none, :gzip, :gzip_fastest, :gzip_smallest)

@@ -59,6 +59,6 @@ end
     dir = joinpath(@__DIR__, "specimens")
     @testset "$fn" for fn in readdir(dir)
         jlso_data = @suppress_out JLSO.load(joinpath(dir, fn))
-        @test jlso_data == datas
+        @test jlso_data == load_datas
     end
 end

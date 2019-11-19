@@ -76,21 +76,23 @@ save(io::IO, data::Pair...; kwargs...) = save(io, Dict(data...); kwargs...)
 save(path::String, args...; kwargs...) = open(io -> save(io, args...; kwargs...), path, "w")
 
 """
-    load(io, objects...) -> Dict{Symbol, Any}
-    load(path, objects...) -> Dict{Symbol, Any}
+    load(io, objects...) -> Dict{String, Any}
+    load(path, objects...) -> Dict{String, Any}
 
 Load the JLSOFile from the io and deserialize the specified objects.
 If no object names are specified then all objects in the file are returned.
+
+Warning: This method will return `Dict{Symbol, Any}` in the next major release.
 """
 load(path::String, args...) = open(io -> load(io, args...), path)
 function load(io::IO, objects::String...)
     jlso = read(io, JLSOFile)
     objects = isempty(objects) ? names(jlso) : objects
-    result = Dict{Symbol, Any}()
+    result = Dict{String, Any}()
 
     for o in objects
         # Note that calling getindex on the jlso triggers the deserialization of the object
-        result[o] = jlso[o]
+        result[String(o)] = jlso[o]
     end
 
     return result

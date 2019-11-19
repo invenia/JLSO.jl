@@ -148,7 +148,7 @@ end
         @testset "$fmt - $k" for fmt in (:bson, :julia_serialize), (k, v) in datas
             JLSO.save("$path/$fmt-$k.jlso", k => v; format=fmt)
             result = JLSO.load("$path/$fmt-$k.jlso")
-            @test result[k] == v
+            @test result[String(k)] == v
         end
     end
 end
