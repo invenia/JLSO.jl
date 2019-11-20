@@ -89,5 +89,31 @@
                 @test jlso_data == datas
             end
         end
+        @testset "upgrade w/ manifest" begin
+            src = joinpath(src_dir, "v3_bson_none.jlso")
+            orig_jlso = read(src, JLSOFile)
+
+            # Extract the project & manifest to modify
+            new_project = deepcopy(orig_jlso.project)
+            new_manifest = deepcopy(orig_jlso.manifest)
+
+            # Check the current state is what we expect
+            @test new_project["compat"]["Memento"] == "0.10, 0.11, 0.12"
+            @test new_manifest["Memento"][1]["version"] == "0.12.1"
+
+
+            # Update those values
+            new_project["compat"]["Memento"] = "0.11, 0.12"
+            new_manifest["Memento"][1]["version"] = "0.12.0"
+
+            mktempdir() do dest_dir
+                dest = joinpath(dest_dir, "v3_bson_none.jlso")
+                @suppress_out JLSO.upgrade(src, dest, new_project, new_manifest)
+                new_jlso = read(dest, JLSOFile)
+
+                @test new_project["compat"]["Memento"] == "0.11, 0.12"
+                @test new_manifest["Memento"][1]["version"] == "0.12.0"
+            end
+        end
     end
 end
