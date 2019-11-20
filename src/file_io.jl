@@ -4,18 +4,30 @@
 
 function Base.write(io::IO, jlso::JLSOFile)
     _versioncheck(jlso.version, WRITEABLE_VERSIONS)
+
+    # Setup an IOBuffer for serializing the manifest
+    project_toml = sprint(Pkg.TOML.print, jlso.project)
+    # @show jlso.manifest
+    manifest_toml = read(
+        compress(jlso.compression, IOBuffer(sprint(Pkg.TOML.print, jlso.manifest)))
+    )
+
     bson(
         io,
-        Dict(
-            "metadata" => Dict(
-                "version" => jlso.version,
-                "julia" => jlso.julia,
-                "format" => jlso.format,
-                "compression" => jlso.compression,
+        # We declare the dict types to be more explicit about the output format.
+        Dict{String, Dict}(
+            "metadata" => Dict{String, Union{String, Vector{UInt8}}}(
+                "version" => string(jlso.version),
+                "julia" => string(jlso.julia),
+                "format" => string(jlso.format),
+                "compression" => string(jlso.compression),
                 "image" => jlso.image,
-                "pkgs" => jlso.pkgs,
+                "project" => project_toml,
+                "manifest" => manifest_toml,
             ),
-            "objects" => jlso.objects,
+            "objects" => Dict{String, Vector{UInt8}}(
+                string(k) => v for (k, v) in jlso.objects
+            ),
         )
     )
 end
@@ -23,32 +35,35 @@ end
 # `read`, unlike `load` does not deserialize any of the objects within the JLSO file,
 # they will be `deserialized` when they are indexed out of the returned JSLOFile object.
 function Base.read(io::IO, ::Type{JLSOFile})
-    d = BSON.load(io)
-    _versioncheck(d["metadata"]["version"], READABLE_VERSIONS)
-    upgrade_jlso!(d)
+    parsed = BSON.load(io)
+    _versioncheck(parsed["metadata"]["version"], READABLE_VERSIONS)
+    d = upgrade_jlso(parsed)
+    compression = Symbol(d["metadata"]["compression"])
+
+    # Try decompressing the manifest, otherwise just return a dict with the raw data
+    manifest = try
+        Pkg.TOML.parse(
+            read(
+                decompress(compression, IOBuffer(d["metadata"]["manifest"])),
+                String
+            )
+        )
+    catch e
+        warn(LOGGER, e)
+        Dict("raw" => d["metadata"]["manifest"])
+    end
+
     return JLSOFile(
-        d["metadata"]["version"],
-        d["metadata"]["julia"],
-        d["metadata"]["format"],
-        d["metadata"]["compression"],
+        VersionNumber(d["metadata"]["version"]),
+        VersionNumber(d["metadata"]["julia"]),
+        Symbol(d["metadata"]["format"]),
+        compression,
         d["metadata"]["image"],
-        d["metadata"]["pkgs"],
-        d["objects"],
+        Pkg.TOML.parse(d["metadata"]["project"]),
+        manifest,
+        Dict{Symbol, Vector{UInt8}}(Symbol(k) => v for (k, v) in d["objects"]),
     )
 end
-
-function upgrade_jlso!(raw_dict::AbstractDict)
-    metadata = raw_dict["metadata"]
-    if metadata["version"] ∈ semver_spec("1")
-        if metadata["format"] == :serialize
-            metadata["format"] = :julia_serialize
-        end
-        metadata["compression"] = :none
-        metadata["version"] = v"2"
-    end
-    return raw_dict
-end
-
 
 """
     save(io, data)
@@ -66,6 +81,8 @@ save(path::String, args...; kwargs...) = open(io -> save(io, args...; kwargs...)
 
 Load the JLSOFile from the io and deserialize the specified objects.
 If no object names are specified then all objects in the file are returned.
+
+Warning: This method will return `Dict{Symbol, Any}` in the next major release.
 """
 load(path::String, args...) = open(io -> load(io, args...), path)
 function load(io::IO, objects::String...)
@@ -75,7 +92,7 @@ function load(io::IO, objects::String...)
 
     for o in objects
         # Note that calling getindex on the jlso triggers the deserialization of the object
-        result[o] = jlso[o]
+        result[String(o)] = jlso[o]
     end
 
     return result
