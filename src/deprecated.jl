@@ -71,11 +71,12 @@ function upgrade(sources::Vector, destinations::Vector)
 
     if !isempty(iter)
         (src, dest), s = iterate(iter)
-
+        mkpath(dirname(dest))
         jlso = open(io -> read(io, JLSOFile), src)
         write(dest, jlso)
 
         for (src, dest) in Iterators.rest(iter, s)
+            mkpath(dirname(dest))
             upgrade(src, dest, jlso.project, jlso.manifest)
         end
     end
