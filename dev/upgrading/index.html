@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Upgrading · JLSO.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/><link href="../assets/invenia.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>JLSO.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">Home</a></li><li><a class="toctext" href="../metadata/">Metadata</a></li><li class="current"><a class="toctext" href>Upgrading</a><ul class="internal"></ul></li><li><a class="toctext" href="../api/">API</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Upgrading</a></li></ul><a class="edit-page" href="https://github.com/invenia/JLSO.jl/blob/master/docs/src/upgrading.md#L"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Upgrading</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Upgrading-1" href="#Upgrading-1">Upgrading</a></h1><p>JLSO.jl will automatically upgrade older versions of the file format when you call <code>JLSO.load</code> or <code>read</code>.</p><pre><code class="language-none">julia&gt; jlso = read(&quot;test/specimens/v1_bson.jlso&quot;, JLSOFile)
+[info | JLSO]: Upgrading JLSO format from v1 to v2
+[info | JLSO]: Upgrading JLSO format from v2 to v3
+  Updating registry at `~/.julia/registries/General`
+  Updating git-repo `git@github.com:JuliaRegistries/General.git`
+  Updating registry at `~/.julia/registries/Invenia`
+  Updating git-repo `git@gitlab.invenia.ca:invenia/PackageRegistry.git`
+ Resolving package versions...
+  Updating `/private/var/folders/h_/vkjv56410m7f75g9ffp46mf80000gp/T/tmphxMa6g/Project.toml`
+  [39de3d68] + AxisArrays v0.3.0
+  [fbb218c0] + BSON v0.2.3
+  [b99e7846] + BinaryProvider v0.5.4
+  [34da2185] + Compat v2.1.0
+  [a93c6f00] + DataFrames v0.18.2
+  [31c24e10] + Distributions v0.20.0
+  [8f5d6c58] + EzXML v0.9.1
+  [9da8a3cd] + JLSO v1.0.0
+  [f28f55f0] + Memento v0.12.1
+  [78c3b35d] + Mocking v0.5.7
+  [f269a46b] + TimeZones v0.9.1
+  Updating `/private/var/folders/h_/vkjv56410m7f75g9ffp46mf80000gp/T/tmphxMa6g/Manifest.toml`
+  [7d9fca2a] + Arpack v0.3.1
+  [39de3d68] + AxisArrays v0.3.0
+  [fbb218c0] + BSON v0.2.3
+  ...
+[ Info: activating new environment at ~/repos/JLSO.jl/Project.toml.
+JLSOFile([ZonedDateTime, DataFrame, Vector, DateTime, String, Matrix, Distribution]; version=&quot;3.0.0&quot;, julia=&quot;1.1.0&quot;, format=:bson, compression=:none, image=&quot;&quot;)</code></pre><p>Upgrading to v3 requires generating a new manifest and project fields from the legacy <code>pkgs</code> field (as seen above) which can be slow and may require manual intervention to address package name collisions across registries. <code>JLSO.upgrade</code> can be used to mitigate these issues.</p><p>To upgrade a single file:</p><pre><code class="language-none">julia&gt; JLSO.upgrade(&quot;test/specimens/v1_bson.jlso&quot;, &quot;v3_bson.jlso&quot;)
+[info | JLSO]: Upgrading test/specimens/v1_bson.jlso -&gt; v3_bson.jlso
+[info | JLSO]: Upgrading JLSO format from v1 to v2
+[info | JLSO]: Upgrading JLSO format from v2 to v3
+ Resolving package versions...
+  Updating `/private/var/folders/h_/vkjv56410m7f75g9ffp46mf80000gp/T/tmpTxpaLh/Project.toml`
+  [39de3d68] + AxisArrays v0.3.0
+  [fbb218c0] + BSON v0.2.3
+  [b99e7846] + BinaryProvider v0.5.4
+  [34da2185] + Compat v2.1.0
+  [a93c6f00] + DataFrames v0.18.2
+  [31c24e10] + Distributions v0.20.0
+  [8f5d6c58] + EzXML v0.9.1
+  [9da8a3cd] + JLSO v1.0.0
+  [f28f55f0] + Memento v0.12.1
+  [78c3b35d] + Mocking v0.5.7
+  [f269a46b] + TimeZones v0.9.1
+  Updating `/private/var/folders/h_/vkjv56410m7f75g9ffp46mf80000gp/T/tmpTxpaLh/Manifest.toml`
+  [7d9fca2a] + Arpack v0.3.1
+  [39de3d68] + AxisArrays v0.3.0
+  [fbb218c0] + BSON v0.2.3
+  ...
+[ Info: activating new environment at ~/repos/JLSO.jl/Project.toml.</code></pre><p>To batch upgrade files created with the same environment:</p><pre><code class="language-none">julia&gt; filenames = [&quot;v1_bson.jlso&quot;, &quot;v1_serialize.jlso&quot;]
+2-element Array{String,1}:
+ &quot;v1_bson.jlso&quot;
+ &quot;v1_serialize.jlso&quot;
+
+julia&gt; JLSO.upgrade(joinpath.(&quot;test/specimens&quot;, filenames), filenames)
+[info | JLSO]: Upgrading JLSO format from v1 to v2
+[info | JLSO]: Upgrading JLSO format from v2 to v3
+ Resolving package versions...
+  Updating `/private/var/folders/h_/vkjv56410m7f75g9ffp46mf80000gp/T/tmptUsSQV/Project.toml`
+  [39de3d68] + AxisArrays v0.3.0
+  [fbb218c0] + BSON v0.2.3
+  [b99e7846] + BinaryProvider v0.5.4
+  [34da2185] + Compat v2.1.0
+  [a93c6f00] + DataFrames v0.18.2
+  [31c24e10] + Distributions v0.20.0
+  [8f5d6c58] + EzXML v0.9.1
+  [9da8a3cd] + JLSO v1.0.0
+  [f28f55f0] + Memento v0.12.1
+  [78c3b35d] + Mocking v0.5.7
+  [f269a46b] + TimeZones v0.9.1
+  Updating `/private/var/folders/h_/vkjv56410m7f75g9ffp46mf80000gp/T/tmptUsSQV/Manifest.toml`
+  [7d9fca2a] + Arpack v0.3.1
+  [39de3d68] + AxisArrays v0.3.0
+  [fbb218c0] + BSON v0.2.3
+  ...
+[ Info: activating new environment at ~/repos/JLSO.jl/Project.toml.
+[info | JLSO]: Upgrading test/specimens/v1_serialize.jlso -&gt; v1_serialize.jlso
+[info | JLSO]: Upgrading JLSO format from v1 to v2
+[info | JLSO]: Upgrading JLSO format from v2 to v3
+ Resolving package versions...
+[ Info: activating new environment at ~/repos/JLSO.jl/Project.toml.
+</code></pre><p>In the above case, the project and manifest is only generated for the first file and reused for all subsequent files.</p><footer><hr/><a class="previous" href="../metadata/"><span class="direction">Previous</span><span class="title">Metadata</span></a><a class="next" href="../api/"><span class="direction">Next</span><span class="title">API</span></a></footer></article></body></html>
