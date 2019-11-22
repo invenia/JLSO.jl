@@ -7,7 +7,7 @@
 [![Codecov](https://codecov.io/gh/invenia/JLSO.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/invenia/JLSO.jl)
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 
-JLSO is a storage container for serialized Julia objects.  
+JLSO is a storage container for serialized Julia objects.
 Think of it less as a serialization format but as a container,
 that employs a serializer, and a compressor, handles all the other concerns including metadata and saving.
 Such that the serializer just needs to determine how to turn a julia object into a stream`Vector{UInt8}`,
