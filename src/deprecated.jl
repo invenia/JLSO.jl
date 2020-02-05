@@ -147,7 +147,7 @@ end
 
 # Used to convert the old "PkgName" => VersionNumber metadata to a
 # Project.toml and Manifest.toml file.
-function _upgrade_env(pkgs::Dict{String,VersionNumber})
+function _upgrade_env(pkgs::Dict{String, VersionNumber})
     src_env = Base.active_project()
 
     try
