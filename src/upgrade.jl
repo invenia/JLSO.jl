@@ -1,30 +1,3 @@
-@deprecate(
-    JLSOFile(
-        version::VersionNumber,
-        julia::VersionNumber,
-        format::Symbol,
-        compression::Symbol,
-        image::String,
-        pkgs::Dict{String, VersionNumber},
-        objects::Dict{String, Vector{UInt8}},
-    ),
-    JLSOFile(
-        version,
-        julia,
-        format,
-        compression,
-        image,
-        Pkg.TOML.parse.(_upgrade_env(pkgs))...,
-        Dict{Symbol, Vector{UInt8}}(Symbol(k) => v for (k, v) in objects),
-    )
-)
-
-@deprecate JLSOFile(data; kwargs...) JLSOFile(:data => data; kwargs...)
-@deprecate(
-    JLSOFile(data::Dict{String, <:Any}; kwargs...),
-    JLSOFile(Dict(Symbol(k) => v for (k, v) in data); kwargs...)
-)
-
 """
     upgrade(src, dest)
     upgrade(src, dest, project, manifest)
@@ -93,9 +66,6 @@ function upgrade_jlso(raw_dict::AbstractDict)
 
     return result
 end
-
-@deprecate getindex(jlso::JLSOFile, name::String) getindex(jlso, Symbol(name))
-@deprecate setindex!(jlso::JLSOFile, value, name::String) setindex!(jlso, value, Symbol(name))
 
 # v1 and v2 stored version numbers but v3 stores strings to be bson parser agnostic
 version_number(x::VersionNumber) = x
