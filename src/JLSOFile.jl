@@ -84,7 +84,7 @@ function JLSOFile(;
 end
 
 
-JLSOFile(data::Pair...; kwargs...) = JLSOFile(Dict(data); kwargs...)
+JLSOFile(data::Pair{Symbol}...; kwargs...) = JLSOFile(Dict(data); kwargs...)
 
 function Base.show(io::IO, jlso::JLSOFile)
     variables = join(names(jlso), ", ")

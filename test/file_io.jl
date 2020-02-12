@@ -1,7 +1,7 @@
 @testset "reading and writing" begin
     @testset "$fmt - $k" for fmt in (:bson, :julia_serialize), (k, v) in datas
         io = IOBuffer()
-        orig = JLSOFile(v; format=fmt)
+        orig = JLSOFile(:data => v; format=fmt)
         write(io, orig)
 
         seekstart(io)
@@ -21,8 +21,8 @@ end
 @testset "deserialization" begin
     # Test deserialization works
     @testset "$fmt - $k" for fmt in (:bson, :julia_serialize), (k, v) in datas
-        jlso = JLSOFile(v; format=fmt)
-        @test jlso["data"] == v
+        jlso = JLSOFile(:data => v; format=fmt)
+        @test jlso[:data] == v
     end
 
     @testset "unsupported julia version $jlso_version" for jlso_version in (v"1.0", v"2.0")
@@ -33,17 +33,18 @@ end
                 :julia_serialize,
                 :none,
                 img,
-                pkgs,
-                Dict("data" => hw_5),
+                project,
+                manifest,
+                Dict(:data => hw_5),
             )
         end
 
         # Test failing to deserialize data because of incompatible julia versions
         # will return the raw bytes
         result = if VERSION < v"1.2"
-            @test_warn(LOGGER, r"MethodError*", jlso["data"])
+            @test_warn(LOGGER, r"MethodError*", jlso[:data])
         else
-            @test_warn(LOGGER, r"TypeError*", jlso["data"])
+            @test_warn(LOGGER, r"TypeError*", jlso[:data])
         end
 
         @test result == hw_5
@@ -133,7 +134,7 @@ end
 
                 # Test failing to deserailize data because of missing modules will
                 # still return the raw bytes
-                result = @test_warn(LOGGER, r"UndefVarError*", jlso["data"])
+                result = @test_warn(LOGGER, r"UndefVarError*", jlso[:data])
 
                 @test result == bytes
             end

@@ -1,7 +1,7 @@
 @testset "JLSOFile" begin
 
     withenv("JLSO_IMAGE" => "busybox") do
-        jlso = JLSOFile("the image env variable is set")
+        jlso = JLSOFile(:data => "the image env variable is set")
         @test jlso.image == "busybox"
     end
 
@@ -33,7 +33,7 @@ end
 end
 
 @testset "show" begin
-    jlso = JLSOFile(datas[:String])
+    jlso = JLSOFile(:string => datas[:String])
     expected = string(
         "JLSOFile([data]; version=v\"2.0.0\", julia=v\"$VERSION\", ",
         "format=:julia_serialize, image=\"\")"
@@ -42,7 +42,7 @@ end
 end
 
 @testset "activate" begin
-    jlso = JLSOFile(datas[:String])
+    jlso = JLSOFile(:string => datas[:String])
     mktempdir() do d
         Pkg.activate(jlso, d) do
             @show Base.active_project()
