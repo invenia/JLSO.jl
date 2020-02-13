@@ -54,7 +54,7 @@ const LOGGER = getlogger(@__MODULE__)
 __init__() = Memento.register(LOGGER)
 
 include("JLSOFile.jl")
-include("deprecated.jl")
+include("upgrade.jl")
 include("file_io.jl")
 include("metadata.jl")
 include("serialization.jl")

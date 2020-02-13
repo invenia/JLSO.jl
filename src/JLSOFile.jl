@@ -84,7 +84,7 @@ function JLSOFile(;
 end
 
 
-JLSOFile(data::Pair...; kwargs...) = JLSOFile(Dict(data); kwargs...)
+JLSOFile(data::Pair{Symbol}...; kwargs...) = JLSOFile(Dict(data); kwargs...)
 
 function Base.show(io::IO, jlso::JLSOFile)
     variables = join(names(jlso), ", ")
@@ -115,14 +115,3 @@ function Base.:(==)(a::JLSOFile, b::JLSOFile)
 end
 
 Base.names(jlso::JLSOFile) = collect(keys(jlso.objects))
-function Base.getproperty(jlso::JLSOFile, attr::Symbol)
-    if attr === :pkgs
-        @warn "pkgs property is deprecated, use .manifest instead"
-        return Dict(
-            name => VersionNumber(get(first(spec), "version", "0.0.0"))
-            for (name, spec) in jlso.manifest
-        )
-    else
-        return getfield(jlso, attr)
-    end
-end
