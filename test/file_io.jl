@@ -162,7 +162,7 @@ end
     @testset "README example" begin
         mktempdir() do path
             JLSO.save(
-                "$path/breakfast.jlso",
+                joinpath(path, "breakfast.jlso"),
                 :food => "☕️🥓🍳",
                 :cost => 11.95,
                 :time => Time(9, 0),
