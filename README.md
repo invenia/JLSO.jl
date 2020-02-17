@@ -33,11 +33,11 @@ Note: If the amount of data you have to store is very small, relative to the met
 ```
 julia> using JLSO, Dates
 
-julia> JLSO.save("breakfast.jlso", "food" => "☕️🥓🍳", "cost" => 11.95, "time" => Time(9, 0))
+julia> JLSO.save("breakfast.jlso", :food => "☕️🥓🍳", :cost => 11.95, :time => Time(9, 0))
 
 julia> loaded = JLSO.load("breakfast.jlso")
-Dict{String,Any} with 3 entries:
-  "cost" => 11.95
-  "time" => 09:00:00
-  "food" => "☕️🥓🍳"
+Dict{Symbol,Any} with 3 entries:
+  :cost => 11.95
+  :time => 09:00:00
+  :food => "☕️🥓🍳"
 ```
