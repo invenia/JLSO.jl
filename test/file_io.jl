@@ -152,4 +152,27 @@ end
             @test result[k] == v
         end
     end
+    @testset "keys are not Symbols" begin
+        @test_throws(
+            getlogger(JLSO),
+            MethodError,
+            JLSO.save("breakfast.jlso", "food" => "☕️🥓🍳", "time" => Time(9, 0)),
+        )
+    end
+    @testset "README example" begin
+        mktempdir() do path
+            JLSO.save(
+                "$path/breakfast.jlso",
+                :food => "☕️🥓🍳",
+                :cost => 11.95,
+                :time => Time(9, 0),
+            )
+            loaded = JLSO.load("$path/breakfast.jlso")
+            @test loaded == Dict{Symbol,Any}(
+                :cost => 11.95,
+                :time => Time(9, 0),
+                :food => "☕️🥓🍳",
+            )
+        end
+    end
 end
