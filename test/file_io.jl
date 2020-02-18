@@ -149,7 +149,8 @@ end
         @testset "$fmt - $k" for fmt in (:bson, :julia_serialize), (k, v) in datas
             JLSO.save("$path/$fmt-$k.jlso", k => v; format=fmt)
             result = JLSO.load("$path/$fmt-$k.jlso")
-            @test result[k] == v
+            single_item = JLSO.load("$path/$fmt-$k.jlso", k)
+            @test result[k] == single_item[k] == v
         end
     end
     @testset "keys are not Symbols" begin

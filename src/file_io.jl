@@ -83,7 +83,7 @@ Load the JLSOFile from the io and deserialize the specified objects.
 If no object names are specified then all objects in the file are returned.
 """
 load(path::String, args...) = open(io -> load(io, args...), path)
-function load(io::IO, objects::String...)
+function load(io::IO, objects::Symbol...)
     jlso = read(io, JLSOFile)
     objects = isempty(objects) ? names(jlso) : objects
     result = Dict{Symbol, Any}()
