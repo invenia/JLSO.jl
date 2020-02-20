@@ -62,7 +62,7 @@ function JLSOFile(
         ReentrantLock()
     )
 
-    for (key, val) in data
+    @sync for (key, val) in data
         @spawn jlso[key] = val
     end
 

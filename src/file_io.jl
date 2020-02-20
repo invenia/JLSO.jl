@@ -95,9 +95,9 @@ function load(io::IO, objects::Symbol...)
         @spawn begin
             # Note that calling getindex on the jlso triggers the deserialization of the object
             deserialized = jlso[o]
-            lock(jlso.lock)
-            result[o] = deserialized
-            unlock(jlso.lock)
+            lock(jlso.lock) do
+                result[o] = deserialized
+            end
         end
     end
 
