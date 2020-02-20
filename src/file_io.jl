@@ -62,6 +62,7 @@ function Base.read(io::IO, ::Type{JLSOFile})
         Pkg.TOML.parse(d["metadata"]["project"]),
         manifest,
         Dict{Symbol, Vector{UInt8}}(Symbol(k) => v for (k, v) in d["objects"]),
+        ReentrantLock()
     )
 end
 
@@ -88,9 +89,14 @@ function load(io::IO, objects::Symbol...)
     objects = isempty(objects) ? names(jlso) : objects
     result = Dict{Symbol, Any}()
 
-    for o in objects
-        # Note that calling getindex on the jlso triggers the deserialization of the object
-        result[o] = jlso[o]
+    @sync for o in objects
+        @spawn begin
+            # Note that calling getindex on the jlso triggers the deserialization of the object
+            deserialized = jlso[o]
+            lock(jlso.lock) do
+                result[o] = deserialized
+            end
+        end
     end
 
     return result

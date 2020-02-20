@@ -36,6 +36,7 @@ end
                 project,
                 manifest,
                 Dict(:data => hw_5),
+                ReentrantLock()
             )
         end
 
@@ -94,6 +95,7 @@ end
                     project,
                     manifest,
                     Dict(:data => bytes),
+                    ReentrantLock()
                 )
 
                 # Test failing to deserailize data because of missing modules will
@@ -130,6 +132,7 @@ end
                     project,
                     manifest,
                     Dict(:data => bytes),
+                    ReentrantLock()
                 )
 
                 # Test failing to deserailize data because of missing modules will
