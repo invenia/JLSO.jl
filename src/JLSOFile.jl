@@ -1,5 +1,3 @@
-using Base.Threads: @spawn
-
 struct JLSOFile
     version::VersionNumber
     julia::VersionNumber

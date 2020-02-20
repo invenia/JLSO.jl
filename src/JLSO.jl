@@ -42,6 +42,14 @@ using Memento
 using Pkg: Pkg
 using Pkg.Types: semver_spec
 
+@static if VERSION < v"1.3.0"
+    macro spawn(ex)
+        esc(ex)
+    end
+else
+    using Base.Threads: @spawn 
+end
+
 # We need to import these cause of a deprecation on object index via strings.
 import Base: getindex, setindex!
 
