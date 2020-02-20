@@ -1,3 +1,5 @@
+import Base.Threads: @spawn 
+
 # This is the code that handles getting the JLSO file itself on to and off of the disk
 # However, it does not describe how to serialize or deserialize the individual objects
 # that is done lazily and the code for that is in serialization.jl
@@ -62,6 +64,7 @@ function Base.read(io::IO, ::Type{JLSOFile})
         Pkg.TOML.parse(d["metadata"]["project"]),
         manifest,
         Dict{Symbol, Vector{UInt8}}(Symbol(k) => v for (k, v) in d["objects"]),
+        ReentrantLock()
     )
 end
 
@@ -88,9 +91,14 @@ function load(io::IO, objects::Symbol...)
     objects = isempty(objects) ? names(jlso) : objects
     result = Dict{Symbol, Any}()
 
-    for o in objects
-        # Note that calling getindex on the jlso triggers the deserialization of the object
-        result[o] = jlso[o]
+    @sync for o in objects
+        @spawn begin
+            # Note that calling getindex on the jlso triggers the deserialization of the object
+            deserialized = jlso[o]
+            lock(jlso.lock)
+            result[o] = deserialized
+            unlock(jlso.lock)
+        end
     end
 
     return result

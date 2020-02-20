@@ -1,3 +1,5 @@
+import Base.Threads: @spawn
+
 struct JLSOFile
     version::VersionNumber
     julia::VersionNumber
@@ -7,6 +9,7 @@ struct JLSOFile
     project::Dict{String, Any}
     manifest::Dict{String, Any}
     objects::Dict{Symbol, Vector{UInt8}}
+    lock::ReentrantLock
 end
 
 """
@@ -56,10 +59,11 @@ function JLSOFile(
         Pkg.TOML.parse(project_toml),
         Pkg.TOML.parse(manifest_toml),
         Dict{Symbol, Vector{UInt8}}(),
+        ReentrantLock()
     )
 
     for (key, val) in data
-        jlso[key] = val
+        @spawn jlso[key] = val
     end
 
     return jlso

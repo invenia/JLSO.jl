@@ -35,6 +35,7 @@ function upgrade(src, dest, project, manifest)
         project,
         manifest,
         Dict{Symbol, Vector{UInt8}}(Symbol(k) => v for (k, v) in d["objects"]),
+        ReentrantLock()
     )
     write(dest, jlso)
 end

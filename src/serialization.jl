@@ -67,6 +67,9 @@ function setindex!(jlso::JLSOFile, value, name::Symbol)
     compressing_buffer = compress(jlso.compression, buffer)
     serialize(jlso.format, compressing_buffer, value)
     complete_compression(compressing_buffer)
+    result = take!(buffer)
 
-    jlso.objects[name] = take!(buffer)
+    lock(jlso.lock)
+    jlso.objects[name] = result
+    unlock(jlso.lock)
 end
