@@ -158,10 +158,10 @@ end
         end
     end
     @testset "String-type paths" begin
-        test_save_and_load(mktempdir())
+        mktempdir(test_save_and_load)
     end
     @testset "Path-type paths" begin
-        test_save_and_load(mktempdir(SystemPath))
+        mktempdir(test_save_and_load, SystemPath)
     end
     @testset "keys are not Symbols" begin
         @test_throws(
