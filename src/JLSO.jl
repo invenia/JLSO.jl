@@ -37,10 +37,11 @@ module JLSO
 
 using BSON
 using CodecZlib
-using Serialization
+using FilePathsBase: AbstractPath
 using Memento
 using Pkg: Pkg
 using Pkg.Types: semver_spec
+using Serialization
 
 @static if VERSION < v"1.3.0"
     macro spawn(ex)
