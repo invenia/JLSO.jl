@@ -148,13 +148,20 @@ end
 end
 
 @testset "saving and loading" begin
-    mktempdir() do path
+    function test_save_and_load(dirpath)
         @testset "$fmt - $k" for fmt in (:bson, :julia_serialize), (k, v) in datas
-            JLSO.save("$path/$fmt-$k.jlso", k => v; format=fmt)
-            result = JLSO.load("$path/$fmt-$k.jlso")
-            single_item = JLSO.load("$path/$fmt-$k.jlso", k)
+            filepath = joinpath(dirpath, "$fmt-$k.jlso")
+            JLSO.save(filepath, k => v; format=fmt)
+            result = JLSO.load(filepath)
+            single_item = JLSO.load(filepath, k)
             @test result[k] == single_item[k] == v
         end
+    end
+    @testset "String-type paths" begin
+        mktempdir(test_save_and_load)
+    end
+    @testset "Path-type paths" begin
+        mktempdir(test_save_and_load, SystemPath)
     end
     @testset "keys are not Symbols" begin
         @test_throws(

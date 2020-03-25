@@ -74,7 +74,9 @@ Creates a JLSOFile with the specified data and kwargs and writes it back to the 
 """
 save(io::IO, data; kwargs...) = write(io, JLSOFile(data; kwargs...))
 save(io::IO, data::Pair...; kwargs...) = save(io, Dict(data...); kwargs...)
-save(path::String, args...; kwargs...) = open(io -> save(io, args...; kwargs...), path, "w")
+function save(path::Union{AbstractPath, AbstractString}, args...; kwargs...)
+    return open(io -> save(io, args...; kwargs...), path, "w")
+end
 
 """
     load(io, objects...) -> Dict{Symbol, Any}
@@ -83,7 +85,7 @@ save(path::String, args...; kwargs...) = open(io -> save(io, args...; kwargs...)
 Load the JLSOFile from the io and deserialize the specified objects.
 If no object names are specified then all objects in the file are returned.
 """
-load(path::String, args...) = open(io -> load(io, args...), path)
+load(path::Union{AbstractPath, AbstractString}, args...) = open(io -> load(io, args...), path)
 function load(io::IO, objects::Symbol...)
     jlso = read(io, JLSOFile)
     objects = isempty(objects) ? names(jlso) : objects
