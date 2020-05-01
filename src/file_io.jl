@@ -103,3 +103,7 @@ function load(io::IO, objects::Symbol...)
 
     return result
 end
+
+# FileIO Interface
+fileio_save(f, args...; kwargs...) = save(f.filename, args...; kwargs...)
+fileio_load(f, args...) = load(f.filename, args...)
