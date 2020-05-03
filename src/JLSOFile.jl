@@ -29,7 +29,7 @@ Stores the information needed to write a .jlso file.
     for adhoc serialization.
 - `compression=:gzip`, what form of compression to apply to the objects.
     Use :none, to not compress. `:gzip_fastest` for the fastest gzip compression,
-    `:gzip_smallest` for the most compact (but slowest), or :gzip for a generally good compromize.
+    `:gzip_smallest` for the most compact (but slowest), or :gzip for a generally good compromise.
     Due to the time taken for disk IO, :none is not normally as fast as using some compression.
 """
 function JLSOFile(
