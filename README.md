@@ -6,6 +6,8 @@
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/invenia/JLSO.jl?svg=true)](https://ci.appveyor.com/project/invenia/JLSO-jl)
 [![Codecov](https://codecov.io/gh/invenia/JLSO.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/invenia/JLSO.jl)
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
+[![DOI](https://zenodo.org/badge/170755855.svg)](https://zenodo.org/badge/latestdoi/170755855)
+
 
 JLSO is a storage container for serialized Julia objects.
 Think of it less as a serialization format but as a container,
