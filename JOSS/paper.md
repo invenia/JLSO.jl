@@ -12,9 +12,9 @@ authors:
     orcid: 0000-0003-1386-1646
     affiliation: 2
 affiliations:
- - name: Research Engineer, Invenia Technical Computing
+ - name: Invenia Technical Computing
    index: 1
- - name: Research Engineer, Invenia Labs
+ - name: Invenia Labs
    index: 2
 date: 24 August 2022
 bibliography: paper.bib
@@ -22,20 +22,44 @@ bibliography: paper.bib
 
 # Summary
 
-As scientific computing software grows increasingly complex, the need to efficiently and reliably store sophisticated program objects has become a growing need. The expanding list of file formats for serializing objects is evidence of this problem. Unfortunately, these file formats typically come with usability versus reliability tradeoffs.
+The complexity of scientific computing software has increased our need for efficient and reliable object storage methods.
+The expanding list of file formats for serializing objects is evidence of this problem.
+Best practices encourage us to explicitly serialize and parse our objects into standardized and reliable file formats (e.g., CSV, BSON, HDF5).
+Unfortunately, this process is tedious and often error-prone, particularly for rapidly changing codebases and types.
+For short term storage, non-standard and language-dependent formats (e.g., Julia serializer, Python pickles) provide a convenient way to save state, without requiring custom application logic.
+These non-standard formats depend on the software stack's exact state during serialization, causing files to become stale and preventing restoration.
+JLSO uses information about the save environment to ensure that these objects can be recovered regardless of the serialization format.
 
-Choosing serialization formats such as CSV, JSON, BSON, and HDF5 are prudent choices for long term storage because they are application and language agnostic. Projects that evolve beyond an initial language or library decision can still load old experimental data.
-These formats often support a limited set of types, requiring applications to define and maintain serialization methods for their custom objects.
+# Specification
 
-Using formats such as JLD (Julia Data), Python pickles or MAT files work best for convenient saving of arbitrary objects. Unfortunately, these formats are often highly coupled to the software dependencies (e.g., language version, software packages), which makes restoring the data more challenging as time passes and the software evolves.
+The JLSO (Julia Serialized Object) format uses a language-independent BSON format to save environment metadata with serialized objects.
+Metadata such as the Julia version and manifest provide a mechanism for debugging deserialization errors and allows for automatic reconstruction of the save state environment.
+By default, JLSO uses the builtin Julia serialization stdlib for individual objects, but the extended BSON.jl format is also supported.
 
-JLSO.jl is a library for conveniently storing arbitrary Julia objects while maintaining restoration reliability. The JLSO (Julia Serialized Object) format stores metadata about the save environment alongside the arbitrarily serialized objects. This metadata includes the:
+```
+{
+    "metadata" : {
+        "julia" : "1.0.3",
+        "format" : "julia_serialize",
+        "project" : "name = \"JLSO\"\n...",
+        "manifest" : [0x5b, 0x5b, 0x50 ... 0x30, 0x22, 0x0a],
+        "image" : "xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/myrepository:latest",
+        "compression" : "none",
+        "version" : "3.0.0",
+    },
+    "objects" : {
+        "var1" : [0x37, 0x4a, 0x4c ... 0x12, 0x00, 0xdf],
+        "var2" : [0x37, 0x4a, 0x4c ... 0xe0, 0xc5, 0x3f],
+        ...
+    ),
+)
+```
 
-1. Julia release version
-2. Object serialization and compression methods used
-3. Package environment states, expressed via the Julia Project.toml and Manifest.toml files
+# Usage
 
-Let's use a simple example to demonstrate why this metadata is valuable. The next few lines we'll load a JLSO files and try to load various objects.
+The Julia language provides first-class support for package environments via Project.toml and Manifest.toml files, which provided an intuitive platform for building our prototype.
+Let us use a simple example to demonstrate why this metadata is valuable.
+Here we will load a JLSO file and try to reconstruct various objects.
 
 ```julia
 julia> using Pkg, JLSO
@@ -77,7 +101,8 @@ Stacktrace:
  [1] require(::Module, ::Symbol) at ./loading.jl:893
 ```
 
-As you can see, we do not have Distributions installed and we also don't know which version of Distributions.jl we need to successfully deserialize that object. As of version 1.2.0, users can resolve these kinds of concerns by rebuilding the package environment used to save a JLSO file directly from the REPL.
+We do not have Distributions.jl installed, and we also do not know which version of Distributions.jl we need to deserialize that object successfully.
+Users can resolve these kinds of concerns by rebuilding the JLSO save environment directly from the REPL.
 
 ```julia
 julia> using Pkg
@@ -92,12 +117,14 @@ julia> jlso[:Distribution]
 Normal{Float64}(μ=50.2, σ=4.3)
 ```
 
-While the metadata in JLSO files caters towards Julia users, the format itself is mostly language agnostic. A variety of internal object serialization formats can be used, and the metadata itself is saved as a BSON documented. The Julia language provides first-class support for package environments via Project.toml and Manifest.toml files, which provided an intuitive platform for building our prototype.
+# Conclusion
 
-Machine learning and simulation software such as MLJ.jl use JLSO to snapshot model state and datasets. Similarly, JLSO is used extensively at Invenia Technical Computing for snapshotting models and our intermediate datasets.
+JLSO.jl is a library for conveniently storing arbitrary Julia objects while maintaining restoration reliability.
+While the concept of pairing save state metadata with serialized objects is not inherently specific to Julia, our implementation of JLSO.jl is.
+Our package is currently being used to snapshot model state and datasets in software at Invenia and in registered packages like MLJ.jl.
 
 # Acknowledgements
 
-We are grateful for the 12 other contributors to the JLSO.jl github repository, and the broader Julia Community for their support and feedback.
+We are grateful for the 12 other contributors to the JLSO.jl GitHub repository, and the broader Julia Community for their support and feedback.
 
-# Citations
+# References
