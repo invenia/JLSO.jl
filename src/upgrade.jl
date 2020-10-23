@@ -124,6 +124,7 @@ function _upgrade_env(pkgs::Dict{String, VersionNumber})
     try
         mktempdir() do tmp
             Pkg.activate(tmp)
+            isempty(pkgs) && return _env()
 
             # We construct an array of PackageSpecs to avoid ordering problems with
             # adding each package individually

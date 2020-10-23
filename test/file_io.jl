@@ -170,6 +170,35 @@ end
             JLSO.save("breakfast.jlso", "food" => "☕️🥓🍳", "time" => Time(9, 0)),
         )
     end
+    @testset "Size Limits" begin
+        mktempdir() do d
+            @testset "Large Objects" begin
+                obj = zeros(UInt8, typemax(Int32) + 1)
+                @test_throws(
+                    InexactError,
+                    JLSO.save(
+                        joinpath(d, "large-object.jlso"),
+                        :X => obj;
+                        compression=:none,
+                    ),
+                )
+            end
+            @testset "Large Docs" begin
+                # Even if an individual object isn't too big we expect an error if the total
+                # doc is too big
+                sz = ceil(Int, typemax(Int32) / 2)
+                @test_throws(
+                    InexactError,
+                    JLSO.save(
+                        joinpath(d, "large-doc.jlso"),
+                        :A => zeros(UInt8, sz),
+                        :B => zeros(UInt8, sz);
+                        compression=:none,
+                    ),
+                )
+            end
+        end
+    end
     @testset "README example" begin
         mktempdir() do path
             JLSO.save(
