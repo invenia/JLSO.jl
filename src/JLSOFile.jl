@@ -23,7 +23,7 @@ Stores the information needed to write a .jlso file.
 
 - `image=""` - The docker image URI that was used to generate the file
 - `julia=$VERSION` - The julia version used to write the file
-- `version=v"2.0"` - The file schema version
+- `version=v"4"` - The file schema version
 - `format=:julia_serialize` - The format to use for serializing individual objects. While `:bson` is
     recommended for longer term object storage, `:julia_serialize` tends to be the faster choice
     for adhoc serialization.
@@ -34,7 +34,7 @@ Stores the information needed to write a .jlso file.
 """
 function JLSOFile(
     data::Dict{Symbol, <:Any};
-    version=v"3",
+    version=v"4",
     julia=VERSION,
     format=:julia_serialize,
     compression=:gzip,
@@ -68,7 +68,7 @@ function JLSOFile(
 end
 
 function JLSOFile(;
-    version=v"3",
+    version=v"4",
     julia=VERSION,
     format=:julia_serialize,
     compression=:gzip,

@@ -171,31 +171,31 @@ end
         )
     end
     @testset "Size Limits" begin
+        # Tests that ensure we can work with objects larger than the BSON max
+        # doc/string/array size. Limited to size typemax(Int32).
+        # Instead of having a file size limited to 2.14 GB we should now support petabyte
+        # sized objects.
         mktempdir() do d
             @testset "Large Objects" begin
                 obj = zeros(UInt8, typemax(Int32) + 1)
-                @test_throws(
-                    InexactError,
-                    JLSO.save(
-                        joinpath(d, "large-object.jlso"),
-                        :X => obj;
-                        compression=:none,
-                    ),
+                JLSO.save(
+                    joinpath(d, "large-object.jlso"),
+                    :X => obj;
+                    compression=:none,
                 )
+                loaded = JLSO.load(joinpath(d, "large-object.jlso"))
+                @test loaded == Dict(:X => obj)
             end
             @testset "Large Docs" begin
-                # Even if an individual object isn't too big we expect an error if the total
-                # doc is too big
                 sz = ceil(Int, typemax(Int32) / 2)
-                @test_throws(
-                    InexactError,
-                    JLSO.save(
-                        joinpath(d, "large-doc.jlso"),
-                        :A => zeros(UInt8, sz),
-                        :B => zeros(UInt8, sz);
-                        compression=:none,
-                    ),
+                JLSO.save(
+                    joinpath(d, "large-doc.jlso"),
+                    :A => zeros(UInt8, sz),
+                    :B => zeros(UInt8, sz);
+                    compression=:none,
                 )
+                loaded = JLSO.load(joinpath(d, "large-doc.jlso"))
+                @test loaded == Dict(:A => zeros(UInt8, sz), :B => zeros(UInt8, sz))
             end
         end
     end
