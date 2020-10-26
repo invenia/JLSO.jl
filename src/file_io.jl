@@ -33,20 +33,36 @@ function Base.write(io::IO, jlso::JLSOFile)
             )
         )
     else
-        # Order is implied by the position in the names and lengths arrays
         # NOTE: We intentionally use a hypthen in the object names and nbytes to make it
         # harder to accidentally accessing them outside of the BSON context
-        BSON.bson(
-            io,
-            Dict{String, Union{Dict, Vector}}(
-                "metadata" => metadata,
-                "object-names" => string.(keys(jlso.objects)),
-                "object-nbytes" => [Int64(length(v)) for v in values(jlso.objects)]
-            )
+
+        doc = Dict{String, Union{Dict, Vector}}(
+            "metadata" => metadata,
+            "object-names" => string.(keys(jlso.objects)),
+            "object-nbytes" => [Int64(length(v)) for v in values(jlso.objects)],
+            "object-pos" => zeros(Int64, length(jlso.objects))
         )
 
-        # Now write our raw data bytes to the end of the IO
-        write(io, vcat(values(jlso.objects)...))
+
+        if isempty(jlso.objects)
+            BSON.bson(io, doc)
+        else
+            buf = IOBuffer()
+
+            # Allocate our BSON doc so we can determine object positions in the file
+            BSON.bson(buf, doc)
+
+            # Determine each objects starting position and update the doc dict
+            # Calculate an offset that can be applied to the nbytes array
+            offsets = cumsum([0, doc["object-nbytes"][1:end-1]...])
+            doc["object-pos"] = position(buf) .+ offsets
+
+            # Now we can write the doc to our actual IO
+            BSON.bson(io, doc)
+
+            # Now write our raw data bytes to the end of the IO
+            write(io, vcat(values(jlso.objects)...))
+        end
     end
 end
 
@@ -137,11 +153,10 @@ function _extract_objects(io::IO, d)
     else
         objects = Dict{Symbol, Vector{UInt8}}()
 
-        for (k, nb) in zip(d["object-names"], d["object-nbytes"])
+        for (k, pos, nb) in zip(d["object-names"], d["object-pos"], d["object-nbytes"])
+            seek(io, pos)
             bytes = read(io, nb)
-            if length(bytes) < nb
-                throw(ArgumentError("Failed to read all $nb bytes for object $k"))
-            end
+            length(bytes) < nb && throw(EOFError())
             objects[Symbol(k)] = bytes
         end
 
