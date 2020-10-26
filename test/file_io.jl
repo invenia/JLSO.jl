@@ -175,7 +175,8 @@ end
         # doc/string/array size. Limited to size typemax(Int32).
         # Instead of having a file size limited to 2.14 GB we should now support petabyte
         # sized objects.
-        mktempdir() do d
+        # These tests only really make sense on 64-bit systems.
+        Int === Int64 && mktempdir() do d
             @testset "Large Objects" begin
                 obj = zeros(UInt8, typemax(Int32) + 1)
                 JLSO.save(
