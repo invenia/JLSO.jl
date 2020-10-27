@@ -26,17 +26,24 @@ function upgrade(src, dest, project, manifest)
     parsed = BSON.load(string(src))
     haskey(parsed["metadata"], "pkgs") && empty!(parsed["metadata"]["pkgs"])
     d = upgrade_jlso(parsed)
-    jlso = JLSOFile(
-        VersionNumber(d["metadata"]["version"]),
-        VersionNumber(d["metadata"]["julia"]),
-        Symbol(d["metadata"]["format"]),
-        Symbol(d["metadata"]["compression"]),
-        d["metadata"]["image"],
-        project,
-        manifest,
-        Dict{Symbol, Vector{UInt8}}(Symbol(k) => v for (k, v) in d["objects"]),
-        ReentrantLock()
-    )
+
+    if VersionNumber(d["metadata"]["version"]) < v"4"
+        jlso = JLSOFile(
+            VersionNumber(d["metadata"]["version"]),
+            VersionNumber(d["metadata"]["julia"]),
+            Symbol(d["metadata"]["format"]),
+            Symbol(d["metadata"]["compression"]),
+            d["metadata"]["image"],
+            project,
+            manifest,
+            Dict{Symbol, Vector{UInt8}}(Symbol(k) => v for (k, v) in d["objects"]),
+            ReentrantLock()
+        )
+    else
+        # We don't need to upgrade v4 files
+        jlso = read(src, JLSOFile)
+    end
+
     write(dest, jlso)
 end
 
