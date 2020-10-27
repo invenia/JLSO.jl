@@ -22,47 +22,46 @@ function Base.write(io::IO, jlso::JLSOFile)
         "manifest" => manifest_toml,
     )
 
-    if jlso.version < v"4"
-        BSON.bson(
-            io,
-            Dict{String, Dict}(
-                "metadata" => metadata,
-                "objects" => Dict{String, Vector{UInt8}}(
-                    string(k) => v for (k, v) in jlso.objects
-                ),
-            )
-        )
-    else
+    if jlso.version >= v"4"
         # NOTE: We intentionally use a hypthen in the object names and nbytes to make it
         # harder to accidentally accessing them outside of the BSON context
 
         doc = Dict{String, Union{Dict, Vector}}(
             "metadata" => metadata,
             "object-names" => string.(keys(jlso.objects)),
-            "object-nbytes" => [Int64(length(v)) for v in values(jlso.objects)],
+            "object-nbytes" => Int64.(length.(values(jlso.objects))),
             "object-pos" => zeros(Int64, length(jlso.objects))
         )
 
 
-        if isempty(jlso.objects)
-            BSON.bson(io, doc)
-        else
-            buf = IOBuffer()
+        # Early exit condition if there are no objects
+        isempty(jlso.objects) && return BSON.bson(io, doc)
 
-            # Allocate our BSON doc so we can determine object positions in the file
-            BSON.bson(buf, doc)
+        buf = IOBuffer()
 
-            # Determine each objects starting position and update the doc dict
-            # Calculate an offset that can be applied to the nbytes array
-            offsets = cumsum([0, doc["object-nbytes"][1:end-1]...])
-            doc["object-pos"] = position(buf) .+ offsets
+        # Allocate our BSON doc so we can determine object positions in the file
+        BSON.bson(buf, doc)
 
-            # Now we can write the doc to our actual IO
-            BSON.bson(io, doc)
+        # Determine each objects starting position and update the doc dict
+        # Calculate an offset that can be applied to the nbytes array
+        offsets = cumsum([0, doc["object-nbytes"][1:end-1]...])
+        doc["object-pos"] = position(buf) .+ offsets
 
-            # Now write our raw data bytes to the end of the IO
-            write(io, vcat(values(jlso.objects)...))
+        # Now we can write the doc to our actual IO
+        BSON.bson(io, doc)
+
+        # Now write our raw data bytes to the end of the IO
+        for obj in values(jlso.objects)
+            write(io, obj)
         end
+    else
+        BSON.bson(
+            io,
+            Dict{String, Dict}(
+                "metadata" => metadata,
+                "objects" => Dict(string(k) => v for (k, v) in jlso.objects),
+            )
+        )
     end
 end
 
@@ -145,8 +144,8 @@ fileio_load(f, args...) = load(f.filename, args...)
 # Objects were initialially saved inline with the BSON document prior to v4
 # To support larger objects/files we started writing objects to the end of file and only save
 # names and sizes to the objects dict in the bson doc.
-# Since our ideal structure is one dict with object bytes we don't upgrade, but rather
-# extract both formats.
+# Since our ideal structure is one dict with object bytes we don't solve this using the
+# `upgrade` function, but rather extract both formats here.
 function _extract_objects(io::IO, d)
     if VersionNumber(d["metadata"]["version"]) < v"4"
         return Dict{Symbol, Vector{UInt8}}(Symbol(k) => v for (k, v) in d["objects"])
