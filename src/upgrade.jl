@@ -26,17 +26,24 @@ function upgrade(src, dest, project, manifest)
     parsed = BSON.load(string(src))
     haskey(parsed["metadata"], "pkgs") && empty!(parsed["metadata"]["pkgs"])
     d = upgrade_jlso(parsed)
-    jlso = JLSOFile(
-        VersionNumber(d["metadata"]["version"]),
-        VersionNumber(d["metadata"]["julia"]),
-        Symbol(d["metadata"]["format"]),
-        Symbol(d["metadata"]["compression"]),
-        d["metadata"]["image"],
-        project,
-        manifest,
-        Dict{Symbol, Vector{UInt8}}(Symbol(k) => v for (k, v) in d["objects"]),
-        ReentrantLock()
-    )
+
+    if VersionNumber(d["metadata"]["version"]) < v"4"
+        jlso = JLSOFile(
+            VersionNumber(d["metadata"]["version"]),
+            VersionNumber(d["metadata"]["julia"]),
+            Symbol(d["metadata"]["format"]),
+            Symbol(d["metadata"]["compression"]),
+            d["metadata"]["image"],
+            project,
+            manifest,
+            Dict{Symbol, Vector{UInt8}}(Symbol(k) => v for (k, v) in d["objects"]),
+            ReentrantLock()
+        )
+    else
+        # We don't need to upgrade v4 files
+        jlso = read(src, JLSOFile)
+    end
+
     write(dest, jlso)
 end
 
@@ -116,6 +123,14 @@ function upgrade_jlso(raw_dict::AbstractDict, ::Val{2})
     )
 end
 
+#=
+NOTE:
+
+JLSO file v4 just moved the object data from the BSON doc to raw bytes at the
+end of the file, avoiding BSON size limitations.
+Extracting the object data is handled separately in `_extract_objects` in file_io.jl.
+=#
+
 # Used to convert the old "PkgName" => VersionNumber metadata to a
 # Project.toml and Manifest.toml file.
 function _upgrade_env(pkgs::Dict{String, VersionNumber})
@@ -124,6 +139,11 @@ function _upgrade_env(pkgs::Dict{String, VersionNumber})
     try
         mktempdir() do tmp
             Pkg.activate(tmp)
+
+            # In julia 1.5 a `require_not_empty` restriction was added for adding packages,
+            # we use this early exit to avoid that.
+            # JuliaLang/Pkg.jl@87aab4a#diff-a43f827629f8ae12bbcbb218a293d325afcdda3a7f3c7016e2292840bf29ed1cR58
+            isempty(pkgs) && return _env()
 
             # We construct an array of PackageSpecs to avoid ordering problems with
             # adding each package individually

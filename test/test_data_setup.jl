@@ -30,7 +30,7 @@ const datas = Dict(
 #==
 for format in (:bson, :julia_serialize)
     for compression in (:none, :gzip, :gzip_fastest, :gzip_smallest)
-        fn = "specimens/v2_$(format)_$(compression).jlso"
+        fn = "specimens/v4_$(format)_$(compression).jlso"
         time = @elapsed JLSO.save(fn, datas; format=format, compression=compression);
         time = @elapsed JLSO.save(fn, datas; format=format, compression=compression);
         @info "" format compression time size=filesize(fn)

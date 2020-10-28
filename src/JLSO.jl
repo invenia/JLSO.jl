@@ -48,7 +48,7 @@ using Serialization
         esc(ex)
     end
 else
-    using Base.Threads: @spawn 
+    using Base.Threads: @spawn
 end
 
 # We need to import these cause of a deprecation on object index via strings.
@@ -56,8 +56,8 @@ import Base: getindex, setindex!
 
 export JLSOFile
 
-const READABLE_VERSIONS = semver_spec("1, 2, 3")
-const WRITEABLE_VERSIONS = semver_spec("3")
+const READABLE_VERSIONS = semver_spec("1, 2, 3, 4")
+const WRITEABLE_VERSIONS = semver_spec("3, 4")
 
 const LOGGER = getlogger(@__MODULE__)
 __init__() = Memento.register(LOGGER)
