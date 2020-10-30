@@ -6,7 +6,7 @@ os:
   - windows
 julia:
   - 1.0   # LTS
-  - 1.5   # Latest Release
+  - 1.3   # Release Invenia uses
   - nightly
 arch:
   - x64
@@ -23,6 +23,7 @@ jobs:
   fast_finish: true
   allow_failures:
     - julia: nightly
+    - arch: x86   # Issues installing dependencies on x86
   # Test 32-bit only on Linux
   exclude:
     - arch: x86
