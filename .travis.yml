@@ -3,27 +3,37 @@ language: julia
 os:
   - linux
   - osx
+  - windows
 julia:
-  - 1.0
-  - 1.1
-  - 1.2
-  - 1.3
-  - 1.4
+  - 1.0   # LTS
+  - 1.5   # Latest Release
   - nightly
-jobs:
-  allow_failures:
-    - julia: nightly
-  fast_finish: true
+arch:
+  - x64
+  - x86
 notifications:
   email: false
+# uncomment the following lines to override the default test script
+#script:
+#  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+#  - julia -e 'Pkg.clone(pwd()); Pkg.build("Impute"); Pkg.test("Impute"; coverage=true)'
 after_success:
   - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
+jobs:
+  fast_finish: true
+  allow_failures:
+    - julia: nightly
+  # Test 32-bit only on Linux
+  exclude:
+    - arch: x86
+      os: osx
+    - arch: x86
+      os: windows
   include:
-    - stage: Documentation
+    - stage: "Documentation"
       julia: 1
-      script: julia --project=docs -e '
-          using Pkg;
-          Pkg.develop(PackageSpec(path=pwd()));
-          Pkg.instantiate();
-          include("docs/make.jl");'
+      os: linux
+      script:
+        - julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
+        - julia --project=docs/ docs/make.jl
       after_success: skip
