@@ -178,25 +178,33 @@ end
         # These tests only really make sense on 64-bit systems.
         Int === Int64 && mktempdir() do d
             @testset "Large Objects" begin
-                obj = zeros(UInt8, typemax(Int32) + 1)
-                JLSO.save(
-                    joinpath(d, "large-object.jlso"),
-                    :X => obj;
-                    compression=:none,
-                )
-                loaded = JLSO.load(joinpath(d, "large-object.jlso"))
-                @test loaded == Dict(:X => obj)
+                try
+                    obj = zeros(UInt8, typemax(Int32) + 1)
+                    JLSO.save(
+                        joinpath(d, "large-object.jlso"),
+                        :X => obj;
+                        compression=:none,
+                    )
+                    loaded = JLSO.load(joinpath(d, "large-object.jlso"))
+                    @test loaded == Dict(:X => obj)
+                catch e
+                    @test isa(e, OutOfMemoryError)
+                end
             end
             @testset "Large Total Size" begin
-                sz = ceil(Int, typemax(Int32) / 2)
-                JLSO.save(
-                    joinpath(d, "large-total-size.jlso"),
-                    :A => zeros(UInt8, sz),
-                    :B => zeros(UInt8, sz);
-                    compression=:none,
-                )
-                loaded = JLSO.load(joinpath(d, "large-total-size.jlso"))
-                @test loaded == Dict(:A => zeros(UInt8, sz), :B => zeros(UInt8, sz))
+                try
+                    sz = ceil(Int, typemax(Int32) / 2)
+                    JLSO.save(
+                        joinpath(d, "large-total-size.jlso"),
+                        :A => zeros(UInt8, sz),
+                        :B => zeros(UInt8, sz);
+                        compression=:none,
+                    )
+                    loaded = JLSO.load(joinpath(d, "large-total-size.jlso"))
+                    @test loaded == Dict(:A => zeros(UInt8, sz), :B => zeros(UInt8, sz))
+                catch e
+                    @test isa(e, OutOfMemoryError)
+                end
             end
         end
     end
