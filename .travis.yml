@@ -23,7 +23,7 @@ jobs:
   fast_finish: true
   allow_failures:
     - julia: nightly
-    - arch: x86   # Issues installing dependencies on x86
+    - arch: x86   # Dependency issue on x86 prior to 1.5 https://github.com/bicycle1885/EzXML.jl/issues/102
   # Test 32-bit only on Linux
   exclude:
     - arch: x86
