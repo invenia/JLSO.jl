@@ -3,18 +3,15 @@
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://invenia.github.io/JLSO.jl/stable)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://invenia.github.io/JLSO.jl/dev)
 [![Build Status](https://travis-ci.com/invenia/JLSO.jl.svg?branch=master)](https://travis-ci.com/invenia/JLSO.jl)
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/invenia/JLSO.jl?svg=true)](https://ci.appveyor.com/project/invenia/JLSO-jl)
 [![Codecov](https://codecov.io/gh/invenia/JLSO.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/invenia/JLSO.jl)
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 [![DOI](https://zenodo.org/badge/170755855.svg)](https://zenodo.org/badge/latestdoi/170755855)
 
-
 JLSO is a storage container for serialized Julia objects.
 Think of it less as a serialization format but as a container,
 that employs a serializer, and a compressor, handles all the other concerns including metadata and saving.
-Such that the serializer just needs to determine how to turn a julia object into a stream`Vector{UInt8}`,
+Such that the serializer just needs to determine how to turn a julia object into a stream (`Vector{UInt8}`),
 and the compressor just needs to determine how to turn one stream of `UInt8`s into a smaller one (and the reverse).
-
 
 At the top-level it is a BSON file,
 where it stores metadata about the system it was created on as well as a collection of objects (the actual data).
