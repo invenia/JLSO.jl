@@ -24,7 +24,7 @@ jobs:
         include:
           # Add a 1.0 job just to make sure we still support it
           - os: ubuntu-latest
-            version: 1.0
+            version: 1.0.5
             arch: x64
           # Add a nightly job just to check if anything upcoming is breaking
           # Unfortunately, this may create some noise in pull requests
