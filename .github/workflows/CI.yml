@@ -10,7 +10,6 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - '1.0'
           - '1.3'
           - 'nightly'
         os:
@@ -19,7 +18,15 @@ jobs:
           - windows-latest
         arch:
           - x64
-          # TODO: Figure out how to test on 32-bit systems
+        include:
+          # Add a 1.0 job just to make sure we still support it
+          - os: ubuntu-16.04
+            version: 1.0
+            arch: x64
+          # Add a 32-bit job to ensure we don't have any 64-bit specific logic
+          - os: ubuntu-16.04
+            version: 1.3
+            arch: x86
     steps:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
