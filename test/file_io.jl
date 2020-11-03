@@ -175,36 +175,35 @@ end
         # doc/string/array size. Limited to size typemax(Int32).
         # Instead of having a file size limited to 2.14 GB we should support petabyte
         # sized objects.
-        # These tests only really make sense on 64-bit systems.
-        Int === Int64 && mktempdir() do d
+        # This test is mostly only safe on 64-bit macos hosts that aren't likely to get OOM
+        # errors.
+        Int === Int64 && Sys.isapple() && mktempdir() do d
             @testset "Large Objects" begin
                 try
                     obj = zeros(UInt8, typemax(Int32) + 1)
+                    expected = Dict(:X => obj)
                     JLSO.save(
                         joinpath(d, "large-object.jlso"),
                         :X => obj;
                         compression=:none,
                     )
                     loaded = JLSO.load(joinpath(d, "large-object.jlso"))
-                    @test loaded == Dict(:X => obj)
+                    @test loaded == expected
                 catch e
                     @test isa(e, OutOfMemoryError)
                 end
             end
             @testset "Large Total Size" begin
-                try
-                    sz = ceil(Int, typemax(Int32) / 2)
-                    JLSO.save(
-                        joinpath(d, "large-total-size.jlso"),
-                        :A => zeros(UInt8, sz),
-                        :B => zeros(UInt8, sz);
-                        compression=:none,
-                    )
-                    loaded = JLSO.load(joinpath(d, "large-total-size.jlso"))
-                    @test loaded == Dict(:A => zeros(UInt8, sz), :B => zeros(UInt8, sz))
-                catch e
-                    @test isa(e, OutOfMemoryError)
-                end
+                sz = ceil(Int, typemax(Int32) / 2)
+                expected = Dict(:A => zeros(UInt8, sz), :B => zeros(UInt8, sz))
+                JLSO.save(
+                    joinpath(d, "large-total-size.jlso"),
+                    :A => zeros(UInt8, sz),
+                    :B => zeros(UInt8, sz);
+                    compression=:none,
+                )
+                loaded = JLSO.load(joinpath(d, "large-total-size.jlso"))
+                @test loaded == expected
             end
         end
     end
