@@ -2,7 +2,10 @@ using Documenter, JLSO
 
 makedocs(
     modules=[JLSO],
-    format=Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true"),
+    format=Documenter.HTML(
+        assets=["assets/invenia.css"],
+        prettyurls = get(ENV, "CI", nothing) == "true",
+    ),
     pages=[
         "Home" => "index.md",
         "Metadata" => "metadata.md",
@@ -11,12 +14,7 @@ makedocs(
     ],
     repo="https://github.com/invenia/JLSO.jl/blob/{commit}{path}#L{line}",
     sitename="JLSO.jl",
-    authors="Rory Finnegan",
-    assets=[
-        "assets/invenia.css",
-    ],
-    strict = true,
-    checkdocs = :none,
+    authors="Invenia Technical Computing Corporation",
 )
 
 deploydocs(;

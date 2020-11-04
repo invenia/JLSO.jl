@@ -28,6 +28,7 @@ decompress(::Compressor{:gzip_smallest}, io) = GzipDecompressorStream(io)
 
 """
     complete_compression(compressing_buffer)
+
 Writes any end of compression sequence to the compressing buffer;
 but does not close the underlying stream.
 The compressing_buffer itself should not be used after this operation

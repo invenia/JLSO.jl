@@ -2,41 +2,154 @@
 
 Manually reading JLSO files can be helpful when addressing issues deserializing objects or to simply to help with reproducibility.
 
-```
-julia> jlso = read("breakfast.jlso", JLSOFile)
-JLSOFile([cost, food, time]; version="3.0.0", julia="1.0.3", format=:julia_serialize, compression=:gzip, image="")
+```@repl metadata-example
+using JLSO
+jlso = read("breakfast.jlso", JLSOFile)
 ```
 
 Now we can manually access the serialized objects:
-```
-julia> jlso.objects
-Dict{Symbol,Array{UInt8,1}} with 3 entries:
-  :cost => UInt8[0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x13  …  0x0e, 0x00, 0x8b, 0xea, 0xfc, 0xc1, 0x11, 0x00, 0x00, 0x00]
-  :food => UInt8[0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x13  …  0x66, 0x00, 0x10, 0x8c, 0x21, 0xf6, 0x18, 0x00, 0x00, 0x00]
-  :time => UInt8[0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x13  …  0x0c, 0x00, 0xa7, 0xc5, 0x38, 0x8c, 0x5b, 0x00, 0x00, 0x00]
+```@repl metadata-example
+jlso.objects
 ```
 
 Or deserialize individual objects:
-```
-julia> jlso[:food]
-"☕️🥓🍳"
+```@repl metadata-example
+jlso[:food]
 ```
 
 Maybe you need to figure out what the environment state was when you wrote the file?
-```
-julia> jlso.project
-Dict{String,Any} with 9 entries:
-  "deps"    => Dict{String,Any}("CodecZlib"=>"944b1d66-785c-5afd-91f1-9de20f533193","Pkg"=>"44cfe95a-1eb2-52ea-b672-e2afdf69b78f","Serialization"=>"9e88b42a-f829-5b0c-bbe9-9e923198166b","BSON"=>"fbb218c0-5317…
-  "name"    => "JLSO"
-  ...
-
-julia> jlso.manifest
-Dict{String,Any} with 39 entries:
-  "Mocking"            => Dict{String,Any}[Dict("git-tree-sha1"=>"bd2623f8b728af988d2afec53d611acb621f3bc4","uuid"=>"78c3b35d-d492-501b-9361-3d52fe80e533","version"=>"0.7.0")]
-  "Pkg"                => Dict{String,Any}[Dict("deps"=>["Dates", "LibGit2", "Markdown", "Printf", "REPL", "Random", "SHA", "UUIDs"],
-  ...
-
+```@repl metadata-example
+jlso.project
+jlso.manifest
 ```
 
 These `project` and `manifest` fields are just the dictionary representations of the Project.toml and Manifest.toml files found in a Julia Pkg environment.
+As such, we can also use `Pkg.activate` to construct and environment matching that used to write the file.
+```julia
+julia> using JLSO, Pkg
+
+julia> dir = joinpath(dirname(dirname(pathof(JLSO))), "test", "specimens")
+"/Users/rory/repos/invenia/JLSO.jl/test/specimens"
+
+julia> jlso = read(joinpath(dir, "v4_bson_none.jlso"), JLSOFile)
+JLSOFile([ZonedDateTime, DataFrame, Vector, DateTime, String, Matrix, Distribution]; version="4.0.0", julia="1.0.5", format=:bson, compression=:none, image="")
+
+julia> # Can't load some object in the current environment
+       jlso[:DataFrame]
+[warn | JLSO]: UndefVarError: DataFrames not defined
+1355-element Array{UInt8,1}:
+ 0x4b
+ 0x05
+ 0x00
+ 0x00
+ 0x02
+ 0x74
+ 0x61
+ 0x67
+ 0x00
+ 0x07
+ 0x00
+ 0x00
+ 0x00
+ 0x73
+ 0x74
+ 0x72
+ 0x75
+ 0x63
+ 0x74
+ 0x00
+ 0x03
+ 0x74
+ 0x79
+ 0x70
+ 0x65
+ 0x00
+ 0x00
+ 0x01
+ 0x00
+ 0x00
+ 0x02
+ 0x74
+ 0x61
+ 0x67
+ 0x00
+ 0x09
+ 0x00
+ 0x00
+ 0x00
+ 0x64
+ 0x61
+ 0x74
+ 0x61
+    ⋮
+ 0x33
+ 0x00
+ 0x21
+ 0x00
+ 0x00
+ 0x00
+ 0x02
+ 0x74
+ 0x61
+ 0x67
+ 0x00
+ 0x07
+ 0x00
+ 0x00
+ 0x00
+ 0x73
+ 0x79
+ 0x6d
+ 0x62
+ 0x6f
+ 0x6c
+ 0x00
+ 0x02
+ 0x6e
+ 0x61
+ 0x6d
+ 0x65
+ 0x00
+ 0x02
+ 0x00
+ 0x00
+ 0x00
+ 0x64
+ 0x00
+ 0x00
+ 0x00
+ 0x00
+ 0x00
+ 0x00
+ 0x00
+ 0x00
+ 0x00
+ 0x00
+
+julia> using DataFrames
+ERROR: ArgumentError: Package DataFrames not found in current path:
+- Run `import Pkg; Pkg.add("DataFrames")` to install the DataFrames package.
+
+Stacktrace:
+ [1] require(::Module, ::Symbol) at ./loading.jl:893
+
+julia> # Specify a non-temp directory as the second argument if you want to reuse this environment across sessions.
+       Pkg.activate(jlso)
+ Activating environment at `/var/folders/vz/zx_0gsp9291dhv049t_nx37r0000gn/T/Project.toml`
+
+julia> # Load our object and perhaps inspect some properties about it
+       # Could also choose export it to a more transparent format
+       using DataFrames
+
+julia> describe(jlso[:DataFrame])
+4×8 DataFrame
+│ Row │ variable │ mean     │ min      │ median   │ max      │ nunique │ nmissing │ eltype   │
+│     │ Symbol   │ Union…   │ Any      │ Union…   │ Any      │ Union…  │ Union…   │ DataType │
+├─────┼──────────┼──────────┼──────────┼──────────┼──────────┼─────────┼──────────┼──────────┤
+│ 1   │ a        │ 3.0      │ 1        │ 3.0      │ 5        │         │          │ Int64    │
+│ 2   │ b        │ 0.772432 │ 0.512452 │ 0.863122 │ 0.907903 │         │          │ Float64  │
+│ 3   │ c        │          │ a        │          │ e        │ 5       │ 0        │ Any      │
+│ 4   │ d        │ 0.6      │ 0        │ 1.0      │ 1        │         │          │ Bool     │
+```
+
 In the future, we may add some tooling to make it easier to view and compare these dictionaries, but it's currently unclear if that should live here or in Pkg.jl.
