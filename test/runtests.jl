@@ -1,6 +1,7 @@
 using BSON
 using Dates
 using Distributed
+using Documenter
 using FilePathsBase: SystemPath
 using InteractiveUtils
 using Memento
@@ -23,4 +24,5 @@ include("test_data_setup.jl")
     include("backwards_compat.jl")
     include("JLSOFile.jl")
     include("file_io.jl")
+    doctest(JLSO)
 end
