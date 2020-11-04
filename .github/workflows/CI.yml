@@ -36,7 +36,7 @@ jobs:
             version: nightly
             arch: x64
           # Add a 32-bit job to ensure we don't have any 64-bit specific logic
-          - os: ubuntu-16.04
+          - os: ubuntu-latest
             version: 1
             arch: x86
     steps:
