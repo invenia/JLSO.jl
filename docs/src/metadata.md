@@ -25,7 +25,7 @@ jlso.manifest
 
 These `project` and `manifest` fields are just the dictionary representations of the Project.toml and Manifest.toml files found in a Julia Pkg environment.
 As such, we can also use `Pkg.activate` to construct and environment matching that used to write the file.
-```
+```julia
 julia> using JLSO, Pkg
 
 julia> dir = joinpath(dirname(dirname(pathof(JLSO))), "test", "specimens")
