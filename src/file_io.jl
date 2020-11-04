@@ -45,7 +45,7 @@ function Base.write(io::IO, jlso::JLSOFile)
         # Determine each objects starting position and update the doc dict
         # Calculate an offset that can be applied to the nbytes array
         offsets = cumsum([0, doc["object-nbytes"][1:end-1]...])
-        doc["object-pos"] = position(buf) .+ offsets
+        doc["object-pos"] = Int64.(position(buf) .+ offsets)
 
         # Now we can write the doc to our actual IO
         BSON.bson(io, doc)

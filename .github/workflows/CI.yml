@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - '1.3'
+          - 1
         os:
           - ubuntu-latest
           - macOS-latest
@@ -26,16 +26,19 @@ jobs:
           - os: ubuntu-latest
             version: 1.0.5
             arch: x64
+          # Add a 1.3 job because that's what Invenia actually uses
+          - os: ubuntu-latest
+            version: 1.3
+            arch: x64
           # Add a nightly job just to check if anything upcoming is breaking
           # Unfortunately, this may create some noise in pull requests
           - os: ubuntu-latest
             version: nightly
             arch: x64
           # Add a 32-bit job to ensure we don't have any 64-bit specific logic
-          # Currently disabled because of issue #80
-          # - os: ubuntu-16.04
-          #   version: 1.3
-          #   arch: x86
+          - os: ubuntu-latest
+            version: 1
+            arch: x86
     steps:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
