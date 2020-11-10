@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Upgrading · JLSO.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/invenia.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.png" alt="JLSO.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">JLSO.jl</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../metadata/">Metadata</a></li><li class="is-active"><a class="tocitem" href>Upgrading</a></li><li><a class="tocitem" href="../api/">API</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Upgrading</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Upgrading</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/invenia/JLSO.jl/blob/master/docs/src/upgrading.md#L" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Upgrading"><a class="docs-heading-anchor" href="#Upgrading">Upgrading</a><a id="Upgrading-1"></a><a class="docs-heading-anchor-permalink" href="#Upgrading" title="Permalink"></a></h1><p>JLSO.jl will automatically upgrade older versions of the file format when you call <code>JLSO.load</code> or <code>read</code>.</p><pre><code class="language-julia-repl">julia&gt; using JLSO
+
+julia&gt; dir = joinpath(dirname(dirname(pathof(JLSO))), &quot;test&quot;, &quot;specimens&quot;)
+&quot;/home/runner/work/JLSO.jl/JLSO.jl/test/specimens&quot;
+
+julia&gt; jlso = read(joinpath(dir, v1_bson.jlso&quot;), JLSOFile)
+ERROR: syntax: incomplete: invalid string syntax</code></pre><p>Upgrading to v3 requires generating a new manifest and project fields from the legacy <code>pkgs</code> field (as seen above) which can be slow and may require manual intervention to address package name collisions across registries. <code>JLSO.upgrade</code> can be used to mitigate these issues.</p><p>To upgrade a single file:</p><pre><code class="language-julia-repl">julia&gt; JLSO.upgrade(joinpath(dir, &quot;v1_bson.jlso&quot;), &quot;v3_bson.jlso&quot;)
+ Activating new environment at `/tmp/jl_VIEWlu/Project.toml`
+   Updating registry at `~/.julia/registries/General`
+  Resolving package versions...
+  Installed TimeZones ──────────────────── v0.9.1
+  Installed JLSO ───────────────────────── v1.0.0
+  Installed Memento ────────────────────── v0.12.1
+  Installed Mocking ────────────────────── v0.5.7
+  Installed BinaryProvider ─────────────── v0.5.4
+  Installed AxisArrays ─────────────────── v0.3.0
+  Installed Distributions ──────────────── v0.20.0
+  Installed Compat ─────────────────────── v2.1.0
+  Installed IteratorInterfaceExtensions ── v1.0.0
+  Installed EzXML ──────────────────────── v0.9.1
+  Installed SortingAlgorithms ──────────── v0.3.1
+  Installed DataFrames ─────────────────── v0.18.2
+  Installed DataStructures ─────────────── v0.17.20
+  Installed StatsFuns ──────────────────── v0.8.0
+  Installed BSON ───────────────────────── v0.2.3
+  Installed Reexport ───────────────────── v0.2.0
+  Installed OpenBLAS_jll ───────────────── v0.3.9+5
+  Installed PDMats ─────────────────────── v0.9.12
+  Installed Parsers ────────────────────── v1.0.12
+  Installed URIParser ──────────────────── v0.4.1
+  Installed StatsBase ──────────────────── v0.30.0
+  Installed PooledArrays ───────────────── v0.5.3
+  Installed Tables ─────────────────────── v0.2.11
+  Installed OrderedCollections ─────────── v1.3.2
+  Installed QuadGK ─────────────────────── v2.4.1
+  Installed Rmath ──────────────────────── v0.5.1
+  Installed DataAPI ────────────────────── v1.4.0
+  Installed CompilerSupportLibraries_jll ─ v0.3.4+0
+  Installed DataValueInterfaces ────────── v1.0.0
+  Installed BinDeps ────────────────────── v0.8.10
+  Installed Arpack ─────────────────────── v0.4.0
+  Installed Missings ───────────────────── v0.4.4
+  Installed SpecialFunctions ───────────── v0.7.2
+  Installed IntervalSets ───────────────── v0.3.2
+  Installed CategoricalArrays ──────────── v0.7.7
+  Installed TableTraits ────────────────── v1.0.0
+  Installed RangeArrays ────────────────── v0.3.2
+  Installed Arpack_jll ─────────────────── v3.5.0+3
+  Installed IterTools ──────────────────── v1.3.0
+Updating `/tmp/jl_VIEWlu/Project.toml`
+  [39de3d68] + AxisArrays v0.3.0
+  [fbb218c0] + BSON v0.2.3
+  [b99e7846] + BinaryProvider v0.5.4
+  [34da2185] + Compat v2.1.0
+  [a93c6f00] + DataFrames v0.18.2
+  [31c24e10] + Distributions v0.20.0
+  [8f5d6c58] + EzXML v0.9.1
+  [9da8a3cd] + JLSO v1.0.0
+  [f28f55f0] + Memento v0.12.1
+  [78c3b35d] + Mocking v0.5.7
+  [f269a46b] + TimeZones v0.9.1
+Updating `/tmp/jl_VIEWlu/Manifest.toml`
+  [7d9fca2a] + Arpack v0.4.0
+  [68821587] + Arpack_jll v3.5.0+3
+  [56f22d72] + Artifacts v1.3.0
+  [39de3d68] + AxisArrays v0.3.0
+  [fbb218c0] + BSON v0.2.3
+  [9e28174c] + BinDeps v0.8.10
+  [b99e7846] + BinaryProvider v0.5.4
+  [324d7699] + CategoricalArrays v0.7.7
+  [34da2185] + Compat v2.1.0
+  [e66e0078] + CompilerSupportLibraries_jll v0.3.4+0
+  [9a962f9c] + DataAPI v1.4.0
+  [a93c6f00] + DataFrames v0.18.2
+  [864edb3b] + DataStructures v0.17.20
+  [e2d170a0] + DataValueInterfaces v1.0.0
+  [31c24e10] + Distributions v0.20.0
+  [8f5d6c58] + EzXML v0.9.1
+  [8197267c] + IntervalSets v0.3.2
+  [c8e1da08] + IterTools v1.3.0
+  [82899510] + IteratorInterfaceExtensions v1.0.0
+  [692b3bcd] + JLLWrappers v1.1.3
+  [9da8a3cd] + JLSO v1.0.0
+  [682c06a0] + JSON v0.21.1
+  [f28f55f0] + Memento v0.12.1
+  [e1d29d7a] + Missings v0.4.4
+  [78c3b35d] + Mocking v0.5.7
+  [4536629a] + OpenBLAS_jll v0.3.9+5
+  [bac558e1] + OrderedCollections v1.3.2
+  [90014a1f] + PDMats v0.9.12
+  [69de0a69] + Parsers v1.0.12
+  [2dfb63ee] + PooledArrays v0.5.3
+  [1fd47b50] + QuadGK v2.4.1
+  [b3c3ace0] + RangeArrays v0.3.2
+  [189a3867] + Reexport v0.2.0
+  [79098fc4] + Rmath v0.5.1
+  [a2af1166] + SortingAlgorithms v0.3.1
+  [276daf66] + SpecialFunctions v0.7.2
+  [2913bbd2] + StatsBase v0.30.0
+  [4c63d2b9] + StatsFuns v0.8.0
+  [cea106d9] + Syslogs v0.3.0
+  [3783bdb8] + TableTraits v1.0.0
+  [bd369af6] + Tables v0.2.11
+  [f269a46b] + TimeZones v0.9.1
+  [30578b45] + URIParser v0.4.1
+  [2a0f44e3] + Base64
+  [ade2ca70] + Dates
+  [8bb1440f] + DelimitedFiles
+  [8ba89e20] + Distributed
+  [9fa8497b] + Future
+  [b77e0a4c] + InteractiveUtils
+  [76f85450] + LibGit2
+  [8f399da3] + Libdl
+  [37e2e46d] + LinearAlgebra
+  [56ddb016] + Logging
+  [d6f4376e] + Markdown
+  [a63ad114] + Mmap
+  [44cfe95a] + Pkg
+  [de0858da] + Printf
+  [9abbd945] + Profile
+  [3fa0cd96] + REPL
+  [9a3f8284] + Random
+  [ea8e919c] + SHA
+  [9e88b42a] + Serialization
+  [1a1011a3] + SharedArrays
+  [6462fe0b] + Sockets
+  [2f01184e] + SparseArrays
+  [10745b16] + Statistics
+  [4607b0f0] + SuiteSparse
+  [8dfed614] + Test
+  [cf7118a7] + UUIDs
+  [4ec0a83e] + Unicode
+   Building EzXML ───────────→ `~/.julia/packages/EzXML/r19gO/deps/build.log`
+   Building TimeZones ───────→ `~/.julia/packages/TimeZones/Z0kpK/deps/build.log`
+   Building Rmath ───────────→ `~/.julia/packages/Rmath/4wt82/deps/build.log`
+   Building SpecialFunctions → `~/.julia/packages/SpecialFunctions/fvheQ/deps/build.log`
+ Activating environment at `~/work/JLSO.jl/JLSO.jl/docs/Project.toml`</code></pre><p>To batch upgrade files created with the same environment:</p><pre><code class="language-julia-repl">julia&gt; filenames = [&quot;v1_bson.jlso&quot;, &quot;v1_serialize.jlso&quot;]
+2-element Array{String,1}:
+ &quot;v1_bson.jlso&quot;
+ &quot;v1_serialize.jlso&quot;
+
+julia&gt; JLSO.upgrade(joinpath.(dir, filenames), filenames)
+ Activating new environment at `/tmp/jl_zbYT1M/Project.toml`
+  Resolving package versions...
+Updating `/tmp/jl_zbYT1M/Project.toml`
+  [39de3d68] + AxisArrays v0.3.0
+  [fbb218c0] + BSON v0.2.3
+  [b99e7846] + BinaryProvider v0.5.4
+  [34da2185] + Compat v2.1.0
+  [a93c6f00] + DataFrames v0.18.2
+  [31c24e10] + Distributions v0.20.0
+  [8f5d6c58] + EzXML v0.9.1
+  [9da8a3cd] + JLSO v1.0.0
+  [f28f55f0] + Memento v0.12.1
+  [78c3b35d] + Mocking v0.5.7
+  [f269a46b] + TimeZones v0.9.1
+Updating `/tmp/jl_zbYT1M/Manifest.toml`
+  [7d9fca2a] + Arpack v0.4.0
+  [68821587] + Arpack_jll v3.5.0+3
+  [56f22d72] + Artifacts v1.3.0
+  [39de3d68] + AxisArrays v0.3.0
+  [fbb218c0] + BSON v0.2.3
+  [9e28174c] + BinDeps v0.8.10
+  [b99e7846] + BinaryProvider v0.5.4
+  [324d7699] + CategoricalArrays v0.7.7
+  [34da2185] + Compat v2.1.0
+  [e66e0078] + CompilerSupportLibraries_jll v0.3.4+0
+  [9a962f9c] + DataAPI v1.4.0
+  [a93c6f00] + DataFrames v0.18.2
+  [864edb3b] + DataStructures v0.17.20
+  [e2d170a0] + DataValueInterfaces v1.0.0
+  [31c24e10] + Distributions v0.20.0
+  [8f5d6c58] + EzXML v0.9.1
+  [8197267c] + IntervalSets v0.3.2
+  [c8e1da08] + IterTools v1.3.0
+  [82899510] + IteratorInterfaceExtensions v1.0.0
+  [692b3bcd] + JLLWrappers v1.1.3
+  [9da8a3cd] + JLSO v1.0.0
+  [682c06a0] + JSON v0.21.1
+  [f28f55f0] + Memento v0.12.1
+  [e1d29d7a] + Missings v0.4.4
+  [78c3b35d] + Mocking v0.5.7
+  [4536629a] + OpenBLAS_jll v0.3.9+5
+  [bac558e1] + OrderedCollections v1.3.2
+  [90014a1f] + PDMats v0.9.12
+  [69de0a69] + Parsers v1.0.12
+  [2dfb63ee] + PooledArrays v0.5.3
+  [1fd47b50] + QuadGK v2.4.1
+  [b3c3ace0] + RangeArrays v0.3.2
+  [189a3867] + Reexport v0.2.0
+  [79098fc4] + Rmath v0.5.1
+  [a2af1166] + SortingAlgorithms v0.3.1
+  [276daf66] + SpecialFunctions v0.7.2
+  [2913bbd2] + StatsBase v0.30.0
+  [4c63d2b9] + StatsFuns v0.8.0
+  [cea106d9] + Syslogs v0.3.0
+  [3783bdb8] + TableTraits v1.0.0
+  [bd369af6] + Tables v0.2.11
+  [f269a46b] + TimeZones v0.9.1
+  [30578b45] + URIParser v0.4.1
+  [2a0f44e3] + Base64
+  [ade2ca70] + Dates
+  [8bb1440f] + DelimitedFiles
+  [8ba89e20] + Distributed
+  [9fa8497b] + Future
+  [b77e0a4c] + InteractiveUtils
+  [76f85450] + LibGit2
+  [8f399da3] + Libdl
+  [37e2e46d] + LinearAlgebra
+  [56ddb016] + Logging
+  [d6f4376e] + Markdown
+  [a63ad114] + Mmap
+  [44cfe95a] + Pkg
+  [de0858da] + Printf
+  [9abbd945] + Profile
+  [3fa0cd96] + REPL
+  [9a3f8284] + Random
+  [ea8e919c] + SHA
+  [9e88b42a] + Serialization
+  [1a1011a3] + SharedArrays
+  [6462fe0b] + Sockets
+  [2f01184e] + SparseArrays
+  [10745b16] + Statistics
+  [4607b0f0] + SuiteSparse
+  [8dfed614] + Test
+  [cf7118a7] + UUIDs
+  [4ec0a83e] + Unicode
+ Activating environment at `~/work/JLSO.jl/JLSO.jl/docs/Project.toml`
+ Activating new environment at `/tmp/jl_X6Dq19/Project.toml`
+ Activating environment at `~/work/JLSO.jl/JLSO.jl/docs/Project.toml`</code></pre><p>In the above case, the project and manifest is only generated for the first file and reused for all subsequent files.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../metadata/">« Metadata</a><a class="docs-footer-nextpage" href="../api/">API »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Tuesday 10 November 2020 19:09">Tuesday 10 November 2020</span>. Using Julia version 1.5.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
