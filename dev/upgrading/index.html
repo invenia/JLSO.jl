@@ -6,48 +6,51 @@ julia&gt; dir = joinpath(dirname(dirname(pathof(JLSO))), &quot;test&quot;, &quot
 
 julia&gt; jlso = read(joinpath(dir, v1_bson.jlso&quot;), JLSOFile)
 ERROR: syntax: incomplete: invalid string syntax</code></pre><p>Upgrading to v3 requires generating a new manifest and project fields from the legacy <code>pkgs</code> field (as seen above) which can be slow and may require manual intervention to address package name collisions across registries. <code>JLSO.upgrade</code> can be used to mitigate these issues.</p><p>To upgrade a single file:</p><pre><code class="language-julia-repl">julia&gt; JLSO.upgrade(joinpath(dir, &quot;v1_bson.jlso&quot;), &quot;v3_bson.jlso&quot;)
- Activating new environment at `/tmp/jl_fDjzR2/Project.toml`
+ Activating new environment at `/tmp/jl_eNpHys/Project.toml`
    Updating registry at `~/.julia/registries/General`
+┌ Warning: could not download https://pkg.julialang.org/registries
+└ @ Pkg.Types /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.5/Pkg/src/Types.jl:951
   Resolving package versions...
-  Installed TimeZones ──────────────────── v0.9.1
   Installed Mocking ────────────────────── v0.5.7
   Installed JLSO ───────────────────────── v1.0.0
   Installed BinaryProvider ─────────────── v0.5.4
+  Installed TimeZones ──────────────────── v0.9.1
   Installed Memento ────────────────────── v0.12.1
   Installed AxisArrays ─────────────────── v0.3.0
   Installed Distributions ──────────────── v0.20.0
-  Installed Compat ─────────────────────── v2.1.0
-  Installed EzXML ──────────────────────── v0.9.1
-  Installed DataValueInterfaces ────────── v1.0.0
-  Installed DataFrames ─────────────────── v0.18.2
-  Installed Missings ───────────────────── v0.4.4
   Installed BSON ───────────────────────── v0.2.3
-  Installed DataAPI ────────────────────── v1.4.0
-  Installed IterTools ──────────────────── v1.3.0
-  Installed DataStructures ─────────────── v0.17.20
-  Installed RangeArrays ────────────────── v0.3.2
-  Installed Tables ─────────────────────── v0.2.11
+  Installed SortingAlgorithms ──────────── v0.3.1
   Installed IteratorInterfaceExtensions ── v1.0.0
-  Installed QuadGK ─────────────────────── v2.4.1
-  Installed Arpack ─────────────────────── v0.4.0
+  Installed DataStructures ─────────────── v0.17.20
+  Installed Compat ─────────────────────── v2.1.0
+  Installed Reexport ───────────────────── v0.2.0
+  Installed EzXML ──────────────────────── v0.9.1
+  Installed StatsFuns ──────────────────── v0.8.0
+  Installed DataFrames ─────────────────── v0.18.2
+  Installed Parsers ────────────────────── v1.0.12
+  Installed PDMats ─────────────────────── v0.9.12
+  Installed PooledArrays ───────────────── v0.5.3
   Installed OpenBLAS_jll ───────────────── v0.3.9+5
   Installed URIParser ──────────────────── v0.4.1
   Installed OrderedCollections ─────────── v1.3.2
-  Installed StatsFuns ──────────────────── v0.8.0
-  Installed TableTraits ────────────────── v1.0.0
-  Installed CompilerSupportLibraries_jll ─ v0.3.4+0
-  Installed CategoricalArrays ──────────── v0.7.7
-  Installed Arpack_jll ─────────────────── v3.5.0+3
-  Installed Reexport ───────────────────── v0.2.0
   Installed StatsBase ──────────────────── v0.30.0
-  Installed PooledArrays ───────────────── v0.5.3
-  Installed IntervalSets ───────────────── v0.3.2
-  Installed SortingAlgorithms ──────────── v0.3.1
-  Installed BinDeps ────────────────────── v0.8.10
-  Installed SpecialFunctions ───────────── v0.7.2
+  Installed QuadGK ─────────────────────── v2.4.1
+  Installed DataAPI ────────────────────── v1.4.0
+  Installed CompilerSupportLibraries_jll ─ v0.3.4+0
+  Installed DataValueInterfaces ────────── v1.0.0
   Installed Rmath ──────────────────────── v0.5.1
-  Installed PDMats ─────────────────────── v0.9.12
-Updating `/tmp/jl_fDjzR2/Project.toml`
+  Installed Tables ─────────────────────── v0.2.11
+  Installed Missings ───────────────────── v0.4.4
+  Installed BinDeps ────────────────────── v0.8.10
+  Installed RangeArrays ────────────────── v0.3.2
+  Installed TableTraits ────────────────── v1.0.0
+  Installed CategoricalArrays ──────────── v0.7.7
+  Installed SpecialFunctions ───────────── v0.7.2
+  Installed IntervalSets ───────────────── v0.3.2
+  Installed IterTools ──────────────────── v1.3.0
+  Installed Arpack_jll ─────────────────── v3.5.0+3
+  Installed Arpack ─────────────────────── v0.4.0
+Updating `/tmp/jl_eNpHys/Project.toml`
   [39de3d68] + AxisArrays v0.3.0
   [fbb218c0] + BSON v0.2.3
   [b99e7846] + BinaryProvider v0.5.4
@@ -59,7 +62,7 @@ Updating `/tmp/jl_fDjzR2/Project.toml`
   [f28f55f0] + Memento v0.12.1
   [78c3b35d] + Mocking v0.5.7
   [f269a46b] + TimeZones v0.9.1
-Updating `/tmp/jl_fDjzR2/Manifest.toml`
+Updating `/tmp/jl_eNpHys/Manifest.toml`
   [7d9fca2a] + Arpack v0.4.0
   [68821587] + Arpack_jll v3.5.0+3
   [56f22d72] + Artifacts v1.3.0
@@ -88,7 +91,7 @@ Updating `/tmp/jl_fDjzR2/Manifest.toml`
   [4536629a] + OpenBLAS_jll v0.3.9+5
   [bac558e1] + OrderedCollections v1.3.2
   [90014a1f] + PDMats v0.9.12
-  [69de0a69] + Parsers v1.0.11
+  [69de0a69] + Parsers v1.0.12
   [2dfb63ee] + PooledArrays v0.5.3
   [1fd47b50] + QuadGK v2.4.1
   [b3c3ace0] + RangeArrays v0.3.2
@@ -132,17 +135,17 @@ Updating `/tmp/jl_fDjzR2/Manifest.toml`
   [4ec0a83e] + Unicode
    Building EzXML ───────────→ `~/.julia/packages/EzXML/r19gO/deps/build.log`
    Building TimeZones ───────→ `~/.julia/packages/TimeZones/Z0kpK/deps/build.log`
-   Building SpecialFunctions → `~/.julia/packages/SpecialFunctions/fvheQ/deps/build.log`
    Building Rmath ───────────→ `~/.julia/packages/Rmath/4wt82/deps/build.log`
+   Building SpecialFunctions → `~/.julia/packages/SpecialFunctions/fvheQ/deps/build.log`
  Activating environment at `~/work/JLSO.jl/JLSO.jl/docs/Project.toml`</code></pre><p>To batch upgrade files created with the same environment:</p><pre><code class="language-julia-repl">julia&gt; filenames = [&quot;v1_bson.jlso&quot;, &quot;v1_serialize.jlso&quot;]
 2-element Array{String,1}:
  &quot;v1_bson.jlso&quot;
  &quot;v1_serialize.jlso&quot;
 
 julia&gt; JLSO.upgrade(joinpath.(dir, filenames), filenames)
- Activating new environment at `/tmp/jl_fWtxpP/Project.toml`
+ Activating new environment at `/tmp/jl_EXqrct/Project.toml`
   Resolving package versions...
-Updating `/tmp/jl_fWtxpP/Project.toml`
+Updating `/tmp/jl_EXqrct/Project.toml`
   [39de3d68] + AxisArrays v0.3.0
   [fbb218c0] + BSON v0.2.3
   [b99e7846] + BinaryProvider v0.5.4
@@ -154,7 +157,7 @@ Updating `/tmp/jl_fWtxpP/Project.toml`
   [f28f55f0] + Memento v0.12.1
   [78c3b35d] + Mocking v0.5.7
   [f269a46b] + TimeZones v0.9.1
-Updating `/tmp/jl_fWtxpP/Manifest.toml`
+Updating `/tmp/jl_EXqrct/Manifest.toml`
   [7d9fca2a] + Arpack v0.4.0
   [68821587] + Arpack_jll v3.5.0+3
   [56f22d72] + Artifacts v1.3.0
@@ -183,7 +186,7 @@ Updating `/tmp/jl_fWtxpP/Manifest.toml`
   [4536629a] + OpenBLAS_jll v0.3.9+5
   [bac558e1] + OrderedCollections v1.3.2
   [90014a1f] + PDMats v0.9.12
-  [69de0a69] + Parsers v1.0.11
+  [69de0a69] + Parsers v1.0.12
   [2dfb63ee] + PooledArrays v0.5.3
   [1fd47b50] + QuadGK v2.4.1
   [b3c3ace0] + RangeArrays v0.3.2
@@ -226,5 +229,5 @@ Updating `/tmp/jl_fWtxpP/Manifest.toml`
   [cf7118a7] + UUIDs
   [4ec0a83e] + Unicode
  Activating environment at `~/work/JLSO.jl/JLSO.jl/docs/Project.toml`
- Activating new environment at `/tmp/jl_Akovoa/Project.toml`
- Activating environment at `~/work/JLSO.jl/JLSO.jl/docs/Project.toml`</code></pre><p>In the above case, the project and manifest is only generated for the first file and reused for all subsequent files.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../metadata/">« Metadata</a><a class="docs-footer-nextpage" href="../api/">API »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 4 November 2020 22:25">Wednesday 4 November 2020</span>. Using Julia version 1.5.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+ Activating new environment at `/tmp/jl_fYb5OA/Project.toml`
+ Activating environment at `~/work/JLSO.jl/JLSO.jl/docs/Project.toml`</code></pre><p>In the above case, the project and manifest is only generated for the first file and reused for all subsequent files.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../metadata/">« Metadata</a><a class="docs-footer-nextpage" href="../api/">API »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Tuesday 10 November 2020 18:20">Tuesday 10 November 2020</span>. Using Julia version 1.5.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
