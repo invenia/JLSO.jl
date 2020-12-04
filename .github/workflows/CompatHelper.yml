@@ -1,7 +1,7 @@
 name: CompatHelper
 on:
   schedule:
-    - cron: '00 00 * * *'  # Everyday at midnight
+    - cron: '0 0 * * *'  # Everyday at midnight
   workflow_dispatch:
 jobs:
   CompatHelper:
