@@ -43,18 +43,43 @@ end
 
 
 """
-    getindex(jlso, name)
+    getindex(jlso, name; autoload=false)
 
 Returns the deserialized object with the specified name.
+
+!!Experimental
+
+If autoload=true then JLSO will attempt to load dependencies needed to
+deserialize the object.
 """
-function getindex(jlso::JLSOFile, name::Symbol)
-    try
-        buffer = IOBuffer(jlso.objects[name])
-        decompressing_buffer = decompress(jlso.compression, buffer)
-        return deserialize(jlso.format, decompressing_buffer)
-    catch e
-        warn(LOGGER, e)
-        return jlso.objects[name]
+function getindex(jlso::JLSOFile, name::Symbol; autoload=false)
+    # If autoload is enabled make sure we fail if we fail to load because of the same module
+    pkg = nothing
+
+    while true
+        # Try to deserialize
+        try
+            buffer = IOBuffer(jlso.objects[name])
+            decompressing_buffer = decompress(jlso.compression, buffer)
+            return deserialize(jlso.format, decompressing_buffer)
+        catch e
+            # If we error because of a pkg load error
+            if e isa KeyError && e.key isa Base.PkgId
+                # Call Base.require only if autoload is enabled and we haven't seen this
+                # PkgId before
+                if autoload && e.key != pkg
+                    Base.require(e.key)
+                    continue
+                else
+                    # Otherwise log the error and return the raw bytes
+                    warn(LOGGER, e)
+                    return jlso.objects[name]
+                end
+            else
+                # For other kinds of errors it's probably best to just rethrow the error
+                rethrow(e)
+            end
+        end
     end
 end
 
