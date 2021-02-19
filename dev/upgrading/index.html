@@ -6,48 +6,48 @@ julia&gt; dir = joinpath(dirname(dirname(pathof(JLSO))), &quot;test&quot;, &quot
 
 julia&gt; jlso = read(joinpath(dir, v1_bson.jlso&quot;), JLSOFile)
 ERROR: syntax: incomplete: invalid string syntax</code></pre><p>Upgrading to v3 requires generating a new manifest and project fields from the legacy <code>pkgs</code> field (as seen above) which can be slow and may require manual intervention to address package name collisions across registries. <code>JLSO.upgrade</code> can be used to mitigate these issues.</p><p>To upgrade a single file:</p><pre><code class="language-julia-repl">julia&gt; JLSO.upgrade(joinpath(dir, &quot;v1_bson.jlso&quot;), &quot;v3_bson.jlso&quot;)
- Activating new environment at `/tmp/jl_GzNTss/Project.toml`
+ Activating new environment at `/tmp/jl_hVNgZ6/Project.toml`
    Updating registry at `~/.julia/registries/General`
   Resolving package versions...
   Installed Mocking ────────────────────── v0.5.7
-  Installed JLSO ───────────────────────── v1.0.0
-  Installed Memento ────────────────────── v0.12.1
-  Installed BinaryProvider ─────────────── v0.5.4
   Installed TimeZones ──────────────────── v0.9.1
+  Installed JLSO ───────────────────────── v1.0.0
   Installed AxisArrays ─────────────────── v0.3.0
+  Installed BinaryProvider ─────────────── v0.5.4
+  Installed Memento ────────────────────── v0.12.1
   Installed Distributions ──────────────── v0.20.0
-  Installed Compat ─────────────────────── v2.1.0
-  Installed EzXML ──────────────────────── v0.9.1
   Installed BSON ───────────────────────── v0.2.3
-  Installed DataFrames ─────────────────── v0.18.2
+  Installed Compat ─────────────────────── v2.1.0
   Installed SortingAlgorithms ──────────── v0.3.1
-  Installed IteratorInterfaceExtensions ── v1.0.0
-  Installed Reexport ───────────────────── v0.2.0
   Installed StatsFuns ──────────────────── v0.8.0
+  Installed IteratorInterfaceExtensions ── v1.0.0
+  Installed EzXML ──────────────────────── v0.9.1
+  Installed DataFrames ─────────────────── v0.18.2
+  Installed Reexport ───────────────────── v0.2.0
   Installed DataStructures ─────────────── v0.17.20
   Installed PDMats ─────────────────────── v0.9.12
   Installed OpenBLAS_jll ───────────────── v0.3.9+5
-  Installed StatsBase ──────────────────── v0.30.0
-  Installed Rmath ──────────────────────── v0.5.1
   Installed URIParser ──────────────────── v0.4.1
   Installed PooledArrays ───────────────── v0.5.3
   Installed Tables ─────────────────────── v0.2.11
+  Installed Rmath ──────────────────────── v0.5.1
   Installed OrderedCollections ─────────── v1.4.0
   Installed QuadGK ─────────────────────── v2.4.1
-  Installed CompilerSupportLibraries_jll ─ v0.3.4+0
+  Installed StatsBase ──────────────────── v0.30.0
   Installed DataAPI ────────────────────── v1.6.0
+  Installed CompilerSupportLibraries_jll ─ v0.3.4+0
   Installed DataValueInterfaces ────────── v1.0.0
   Installed BinDeps ────────────────────── v0.8.10
   Installed Arpack ─────────────────────── v0.4.0
+  Installed Missings ───────────────────── v0.4.5
+  Installed SpecialFunctions ───────────── v0.7.2
   Installed CategoricalArrays ──────────── v0.7.7
   Installed IntervalSets ───────────────── v0.3.2
   Installed TableTraits ────────────────── v1.0.0
-  Installed Missings ───────────────────── v0.4.5
-  Installed SpecialFunctions ───────────── v0.7.2
   Installed RangeArrays ────────────────── v0.3.2
   Installed Arpack_jll ─────────────────── v3.5.0+3
   Installed IterTools ──────────────────── v1.3.0
-Updating `/tmp/jl_GzNTss/Project.toml`
+Updating `/tmp/jl_hVNgZ6/Project.toml`
   [39de3d68] + AxisArrays v0.3.0
   [fbb218c0] + BSON v0.2.3
   [b99e7846] + BinaryProvider v0.5.4
@@ -59,7 +59,7 @@ Updating `/tmp/jl_GzNTss/Project.toml`
   [f28f55f0] + Memento v0.12.1
   [78c3b35d] + Mocking v0.5.7
   [f269a46b] + TimeZones v0.9.1
-Updating `/tmp/jl_GzNTss/Manifest.toml`
+Updating `/tmp/jl_hVNgZ6/Manifest.toml`
   [7d9fca2a] + Arpack v0.4.0
   [68821587] + Arpack_jll v3.5.0+3
   [56f22d72] + Artifacts v1.3.0
@@ -140,9 +140,9 @@ Updating `/tmp/jl_GzNTss/Manifest.toml`
  &quot;v1_serialize.jlso&quot;
 
 julia&gt; JLSO.upgrade(joinpath.(dir, filenames), filenames)
- Activating new environment at `/tmp/jl_k8yDku/Project.toml`
+ Activating new environment at `/tmp/jl_SCze23/Project.toml`
   Resolving package versions...
-Updating `/tmp/jl_k8yDku/Project.toml`
+Updating `/tmp/jl_SCze23/Project.toml`
   [39de3d68] + AxisArrays v0.3.0
   [fbb218c0] + BSON v0.2.3
   [b99e7846] + BinaryProvider v0.5.4
@@ -154,7 +154,7 @@ Updating `/tmp/jl_k8yDku/Project.toml`
   [f28f55f0] + Memento v0.12.1
   [78c3b35d] + Mocking v0.5.7
   [f269a46b] + TimeZones v0.9.1
-Updating `/tmp/jl_k8yDku/Manifest.toml`
+Updating `/tmp/jl_SCze23/Manifest.toml`
   [7d9fca2a] + Arpack v0.4.0
   [68821587] + Arpack_jll v3.5.0+3
   [56f22d72] + Artifacts v1.3.0
@@ -226,5 +226,5 @@ Updating `/tmp/jl_k8yDku/Manifest.toml`
   [cf7118a7] + UUIDs
   [4ec0a83e] + Unicode
  Activating environment at `~/work/JLSO.jl/JLSO.jl/docs/Project.toml`
- Activating new environment at `/tmp/jl_NFIKbu/Project.toml`
- Activating environment at `~/work/JLSO.jl/JLSO.jl/docs/Project.toml`</code></pre><p>In the above case, the project and manifest is only generated for the first file and reused for all subsequent files.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../metadata/">« Metadata</a><a class="docs-footer-nextpage" href="../api/">API »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 19 February 2021 17:24">Friday 19 February 2021</span>. Using Julia version 1.5.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+ Activating new environment at `/tmp/jl_7chpg4/Project.toml`
+ Activating environment at `~/work/JLSO.jl/JLSO.jl/docs/Project.toml`</code></pre><p>In the above case, the project and manifest is only generated for the first file and reused for all subsequent files.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../metadata/">« Metadata</a><a class="docs-footer-nextpage" href="../api/">API »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 19 February 2021 22:20">Friday 19 February 2021</span>. Using Julia version 1.5.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
