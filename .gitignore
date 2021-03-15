@@ -4,3 +4,7 @@
 /docs/site/
 
 /Manifest.toml
+
+/docs/tmp/
+*.jlso
+!/test/specimens/*.jlso

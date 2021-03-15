@@ -15,8 +15,12 @@ makedocs(
     repo="https://github.com/invenia/JLSO.jl/blob/{commit}{path}#L{line}",
     sitename="JLSO.jl",
     authors="Invenia Technical Computing Corporation",
+    strict=true,
+    checkdocs=:exports,
 )
 
 deploydocs(;
     repo="github.com/invenia/JLSO.jl",
+    devbranch = "master",
+    push_preview = true,
 )
