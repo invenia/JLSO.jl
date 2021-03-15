@@ -60,7 +60,8 @@ using Pkg
 mktempdir(pwd()) do d
     Pkg.activate(jlso, d) do
         @eval Main begin
-            using DataFrames, JLSO, Pkg
+            using Pkg; Pkg.instantiate()
+            using DataFrames, JLSO
             describe($(jlso)[:DataFrame])
         end
     end
