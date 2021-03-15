@@ -54,15 +54,12 @@ Rather than adding every possible package needed to deserialize the objects in t
 2. Load our desired dependencies
 3. Migrate our data to a more appropriate long term format
 
-```@repl metadata-example
-using JLSO, Pkg
+```@example metadata-example
+using Pkg
 
 # Now we can run our conversion logic in an isolated environment
 mktempdir(pwd()) do d
     cd(d) do
-        repopath = dirname(dirname(pathof(JLSO)))
-        jlso = read(joinpath(repopath, "test", "specimens", "v4_bson_none.jlso"), JLSOFile)
-
         # Modify our Manifest to just use the latest release of JLSO
         delete!(jlso.manifest, "JLSO")
 
