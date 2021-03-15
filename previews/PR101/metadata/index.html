@@ -57,22 +57,73 @@ julia&gt; # Now we can run our conversion logic in an isolated environment
                repopath = dirname(dirname(pathof(JLSO)))
                jlso = read(joinpath(repopath, &quot;test&quot;, &quot;specimens&quot;, &quot;v4_bson_none.jlso&quot;), JLSOFile)
        
-               # Since our Manifest.toml has a relative JLSO path we need to update that first.
-               jlso.manifest[&quot;JLSO&quot;][1][&quot;repo-url&quot;] = relpath(repopath, pwd())
-               @info jlso.manifest[&quot;JLSO&quot;][1][&quot;repo-url&quot;]
+               # Modify our Manifest to just use the latest release of JLSO
+               delete!(jlso.manifest, &quot;JLSO&quot;)
        
                Pkg.activate(jlso, d) do
                    @eval Main begin
-                       using Pkg; Pkg.instantiate(; verbose=true)
+                       using Pkg; Pkg.resolve(); Pkg.instantiate(; verbose=true)
                        using DataFrames, JLSO
                        describe($(jlso)[:DataFrame])
                    end
                end
            end
        end
-[ Info: ../../..
- Activating environment at `~/work/JLSO.jl/JLSO.jl/docs/build/jl_veLJjg/Project.toml`
-    Cloning git-repo `../../..`
-[?25l[2K[?25h   Updating git-repo `../../..`
-[?25l[2K[?25h Activating environment at `~/work/JLSO.jl/JLSO.jl/docs/Project.toml`
-ERROR: Did not find tree_hash ad96fe7ec698f2973fad64392bbb27555f14f78a for `JLSO [9da8a3cd]`</code></pre><p>NOTE:</p><ul><li>Comparing <code>project</code> and <code>manifest</code> dictionaries isn&#39;t ideal, but it&#39;s currently unclear if that should live here or in Pkg.jl.</li><li>The <code>Pkg.activate</code> workflow could probably be replaced with a macro</li></ul></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Home</a><a class="docs-footer-nextpage" href="../upgrading/">Upgrading »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 15 March 2021 17:23">Monday 15 March 2021</span>. Using Julia version 1.5.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+ Activating environment at `~/work/JLSO.jl/JLSO.jl/docs/build/jl_xTquTV/Project.toml`
+  Installed Reexport ──────────────────── v0.2.0
+  Installed DataAPI ───────────────────── v1.3.0
+  Installed URIParser ─────────────────── v0.4.1
+  Installed Missings ──────────────────── v0.4.4
+  Installed TableTraits ───────────────── v1.0.0
+  Installed EzXML ─────────────────────── v1.0.0
+  Installed CategoricalArrays ─────────── v0.8.3
+  Installed Distributions ─────────────── v0.24.1
+  Installed Compat ────────────────────── v3.23.0
+  Installed InvertedIndices ───────────── v1.0.0
+  Installed IteratorInterfaceExtensions ─ v1.0.0
+  Installed DataValueInterfaces ───────── v1.0.0
+  Installed Parsers ───────────────────── v1.0.11
+  Installed BinDeps ───────────────────── v1.0.1
+  Installed BinaryProvider ────────────── v0.5.10
+  Installed Rmath ─────────────────────── v0.6.0
+  Installed OrderedCollections ────────── v1.3.1
+  Installed RecipesBase ───────────────── v1.1.0
+  Installed StaticArrays ──────────────── v0.12.4
+  Installed QuadGK ────────────────────── v2.4.1
+  Installed StatsBase ─────────────────── v0.33.2
+  Installed StructTypes ───────────────── v1.1.0
+  Installed Tables ────────────────────── v1.1.0
+  Installed DataStructures ────────────── v0.18.8
+  Installed DataFrames ────────────────── v0.21.8
+  Installed SortingAlgorithms ─────────── v0.3.1
+  Installed StatsFuns ─────────────────── v0.9.5
+  Installed SpecialFunctions ──────────── v0.8.0
+  Installed PDMats ────────────────────── v0.10.1
+  Installed FillArrays ────────────────── v0.9.7
+  Installed PooledArrays ──────────────── v0.5.3
+  Installed JLSO ──────────────────────── v2.5.0
+  Installed TimeZones ─────────────────── v1.4.0
+Updating `~/work/JLSO.jl/JLSO.jl/docs/build/jl_xTquTV/Project.toml`
+  [9da8a3cd] + JLSO v2.5.0
+Updating `~/work/JLSO.jl/JLSO.jl/docs/build/jl_xTquTV/Manifest.toml`
+  [56f22d72] + Artifacts v1.3.0
+  [fbb218c0] ↑ BSON v0.2.6 ⇒ v0.3.2
+  [944b1d66] ↑ CodecZlib v0.6.0 ⇒ v0.7.0
+  [48062228] ↑ FilePathsBase v0.9.5 ⇒ v0.9.10
+  [692b3bcd] + JLLWrappers v1.2.0
+  [9da8a3cd] + JLSO v2.5.0
+  [f28f55f0] ↑ Memento v1.1.1 ⇒ v1.1.2
+  [83775a58] + Zlib_jll v1.2.11+18
+   Building EzXML ───────────→ `~/.julia/packages/EzXML/BF7Lf/deps/build.log`
+   Building Rmath ───────────→ `~/.julia/packages/Rmath/BoBag/deps/build.log`
+   Building SpecialFunctions → `~/.julia/packages/SpecialFunctions/ne2iw/deps/build.log`
+   Building TimeZones ───────→ `~/.julia/packages/TimeZones/tx0tt/deps/build.log`
+ Activating environment at `~/work/JLSO.jl/JLSO.jl/docs/Project.toml`
+4×8 DataFrame. Omitted printing of 2 columns
+│ Row │ variable │ mean     │ min      │ median   │ max      │ nunique │
+│     │ Symbol   │ Union…   │ Any      │ Union…   │ Any      │ Union…  │
+├─────┼──────────┼──────────┼──────────┼──────────┼──────────┼─────────┤
+│ 1   │ a        │ 3.0      │ 1        │ 3.0      │ 5        │         │
+│ 2   │ b        │ 0.772432 │ 0.512452 │ 0.863122 │ 0.907903 │         │
+│ 3   │ c        │          │ a        │          │ e        │ 5       │
+│ 4   │ d        │ 0.6      │ 0        │ 1.0      │ 1        │         │</code></pre><p>NOTE:</p><ul><li>Comparing <code>project</code> and <code>manifest</code> dictionaries isn&#39;t ideal, but it&#39;s currently unclear if that should live here or in Pkg.jl.</li><li>The <code>Pkg.activate</code> workflow could probably be replaced with a macro</li></ul></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Home</a><a class="docs-footer-nextpage" href="../upgrading/">Upgrading »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 15 March 2021 17:35">Monday 15 March 2021</span>. Using Julia version 1.5.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
