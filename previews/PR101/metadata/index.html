@@ -54,11 +54,11 @@ jlso[:DataFrame]</code></pre><pre class="documenter-example-output">1355-element
 julia&gt; # Now we can run our conversion logic in an isolated environment
        mktempdir(pwd()) do d
            cd(d) do
-               fp = joinpath(dirname(dirname(pathof(JLSO))), &quot;test&quot;, &quot;specimens&quot;, &quot;v4_bson_none.jlso&quot;)
-               jlso = read(fp, JLSOFile)
+               repopath = dirname(dirname(pathof(JLSO)))
+               jlso = read(joinpath(repopath, &quot;test&quot;, &quot;specimens&quot;, &quot;v4_bson_none.jlso&quot;), JLSOFile)
        
                # Since our Manifest.toml has a relative JLSO path we need to update that first.
-               jlso.manifest[&quot;JLSO&quot;][1][&quot;repo-url&quot;] = relpath(pathof(JLSO), pwd())
+               jlso.manifest[&quot;JLSO&quot;][1][&quot;repo-url&quot;] = relpath(repopath, pwd())
                @info jlso.manifest[&quot;JLSO&quot;][1][&quot;repo-url&quot;]
        
                Pkg.activate(jlso, d) do
@@ -70,7 +70,9 @@ julia&gt; # Now we can run our conversion logic in an isolated environment
                end
            end
        end
-[ Info: ../../../src/JLSO.jl
- Activating environment at `~/work/JLSO.jl/JLSO.jl/docs/build/jl_IKtZGj/Project.toml`
- Activating environment at `~/work/JLSO.jl/JLSO.jl/docs/Project.toml`
-ERROR: Did not find path `/home/runner/work/JLSO.jl/JLSO.jl/src/JLSO.jl` for `JLSO [9da8a3cd]`</code></pre><p>NOTE:</p><ul><li>Comparing <code>project</code> and <code>manifest</code> dictionaries isn&#39;t ideal, but it&#39;s currently unclear if that should live here or in Pkg.jl.</li><li>The <code>Pkg.activate</code> workflow could probably be replaced with a macro</li></ul></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Home</a><a class="docs-footer-nextpage" href="../upgrading/">Upgrading »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 15 March 2021 17:16">Monday 15 March 2021</span>. Using Julia version 1.5.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+[ Info: ../../..
+ Activating environment at `~/work/JLSO.jl/JLSO.jl/docs/build/jl_veLJjg/Project.toml`
+    Cloning git-repo `../../..`
+[?25l[2K[?25h   Updating git-repo `../../..`
+[?25l[2K[?25h Activating environment at `~/work/JLSO.jl/JLSO.jl/docs/Project.toml`
+ERROR: Did not find tree_hash ad96fe7ec698f2973fad64392bbb27555f14f78a for `JLSO [9da8a3cd]`</code></pre><p>NOTE:</p><ul><li>Comparing <code>project</code> and <code>manifest</code> dictionaries isn&#39;t ideal, but it&#39;s currently unclear if that should live here or in Pkg.jl.</li><li>The <code>Pkg.activate</code> workflow could probably be replaced with a macro</li></ul></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Home</a><a class="docs-footer-nextpage" href="../upgrading/">Upgrading »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 15 March 2021 17:23">Monday 15 March 2021</span>. Using Julia version 1.5.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
