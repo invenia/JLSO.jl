@@ -29,9 +29,9 @@ This means in the worst case you can install everything again and replicate your
 Note: If the amount of data you have to store is very small, relative to the metadata about your environment, then JLSO is a pretty suboptimal format.
 
 
-### Basic Example:
+## Example
 
-```
+```jldoctest
 julia> using JLSO, Dates
 
 julia> JLSO.save("breakfast.jlso", :food => "☕️🥓🍳", :cost => 11.95, :time => Time(9, 0))
@@ -39,6 +39,6 @@ julia> JLSO.save("breakfast.jlso", :food => "☕️🥓🍳", :cost => 11.95, :t
 julia> loaded = JLSO.load("breakfast.jlso")
 Dict{Symbol,Any} with 3 entries:
   :cost => 11.95
-  :time => 09:00:00
   :food => "☕️🥓🍳"
+  :time => 09:00:00
 ```
