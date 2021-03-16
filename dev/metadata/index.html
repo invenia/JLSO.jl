@@ -1,25 +1,34 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Metadata · JLSO.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/invenia.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.png" alt="JLSO.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">JLSO.jl</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li class="is-active"><a class="tocitem" href>Metadata</a></li><li><a class="tocitem" href="../upgrading/">Upgrading</a></li><li><a class="tocitem" href="../api/">API</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Metadata</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Metadata</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/invenia/JLSO.jl/blob/master/docs/src/metadata.md#L" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Metadata"><a class="docs-heading-anchor" href="#Metadata">Metadata</a><a id="Metadata-1"></a><a class="docs-heading-anchor-permalink" href="#Metadata" title="Permalink"></a></h1><p>Manually reading JLSO files can be helpful when addressing issues deserializing objects or to simply to help with reproducibility.</p><pre><code class="language-julia-repl">julia&gt; using JLSO
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Metadata · JLSO.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/invenia.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.png" alt="JLSO.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">JLSO.jl</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li class="is-active"><a class="tocitem" href>Metadata</a></li><li><a class="tocitem" href="../upgrading/">Upgrading</a></li><li><a class="tocitem" href="../api/">API</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Metadata</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Metadata</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/invenia/JLSO.jl/blob/master/docs/src/metadata.md#L" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Metadata"><a class="docs-heading-anchor" href="#Metadata">Metadata</a><a id="Metadata-1"></a><a class="docs-heading-anchor-permalink" href="#Metadata" title="Permalink"></a></h1><p>Manually reading JLSO files can be helpful when addressing issues deserializing objects or to simply to help with reproducibility.</p><pre><code class="language-julia">using JLSO
 
-julia&gt; jlso = read(&quot;breakfast.jlso&quot;, JLSOFile)
-ERROR: SystemError: opening file &quot;breakfast.jlso&quot;: No such file or directory</code></pre><p>Now we can manually access the serialized objects:</p><pre><code class="language-julia-repl">julia&gt; jlso.objects
-ERROR: UndefVarError: jlso not defined</code></pre><p>Or deserialize individual objects:</p><pre><code class="language-julia-repl">julia&gt; jlso[:food]
-ERROR: UndefVarError: jlso not defined</code></pre><p>Maybe you need to figure out what the environment state was when you wrote the file?</p><pre><code class="language-julia-repl">julia&gt; jlso.project
-ERROR: UndefVarError: jlso not defined
-
-julia&gt; jlso.manifest
-ERROR: UndefVarError: jlso not defined</code></pre><p>These <code>project</code> and <code>manifest</code> fields are just the dictionary representations of the Project.toml and Manifest.toml files found in a Julia Pkg environment. As such, we can also use <code>Pkg.activate</code> to construct and environment matching that used to write the file.</p><pre><code class="language-julia">julia&gt; using JLSO, Pkg
-
-julia&gt; dir = joinpath(dirname(dirname(pathof(JLSO))), &quot;test&quot;, &quot;specimens&quot;)
-&quot;/Users/rory/repos/invenia/JLSO.jl/test/specimens&quot;
-
-julia&gt; jlso = read(joinpath(dir, &quot;v4_bson_none.jlso&quot;), JLSOFile)
-JLSOFile([ZonedDateTime, DataFrame, Vector, DateTime, String, Matrix, Distribution]; version=&quot;4.0.0&quot;, julia=&quot;1.0.5&quot;, format=:bson, compression=:none, image=&quot;&quot;)
-
-julia&gt; # Can&#39;t load some object in the current environment
-       jlso[:DataFrame]
-[warn | JLSO]: UndefVarError: DataFrames not defined
-1355-element Array{UInt8,1}:
+jlso = read(&quot;breakfast.jlso&quot;, JLSOFile)</code></pre><pre class="documenter-example-output">JLSOFile([cost, food, time]; version=&quot;4.0.0&quot;, julia=&quot;1.5.4&quot;, format=:julia_serialize, compression=:gzip, image=&quot;&quot;)</pre><p>Now we can manually access the serialized objects:</p><pre><code class="language-julia">jlso.objects</code></pre><pre class="documenter-example-output">Dict{Symbol,Array{UInt8,1}} with 3 entries:
+  :cost =&gt; UInt8[0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03  … …
+  :food =&gt; UInt8[0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03  … …
+  :time =&gt; UInt8[0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03  … …</pre><p>Or deserialize individual objects:</p><pre><code class="language-julia">jlso[:food]</code></pre><pre class="documenter-example-output">&quot;☕️🥓🍳&quot;</pre><p>Maybe you need to figure out what packages you had installed in the save environment?</p><pre><code class="language-julia">jlso.project</code></pre><pre class="documenter-example-output">Dict{String,Any} with 2 entries:
+  &quot;deps&quot;   =&gt; Dict{String,Any}(&quot;Documenter&quot;=&gt;&quot;e30172f5-a6a5-5a46-863b-614d45cd2…
+  &quot;compat&quot; =&gt; Dict{String,Any}(&quot;Documenter&quot;=&gt;&quot;0.26&quot;)</pre><p>In extreme cases, you may need to inspect the full environment stack. For example, having a struct changed in a dependency.</p><pre><code class="language-julia">jlso.manifest</code></pre><pre class="documenter-example-output">Dict{String,Any} with 41 entries:
+  &quot;Mocking&quot;       =&gt; Dict{String,Any}[Dict(&quot;deps&quot;=&gt;[&quot;ExprTools&quot;],&quot;git-tree-sha1…
+  &quot;Pkg&quot;           =&gt; Dict{String,Any}[Dict(&quot;deps&quot;=&gt;[&quot;Dates&quot;, &quot;LibGit2&quot;, &quot;Libdl&quot;…
+  &quot;TimeZones&quot;     =&gt; Dict{String,Any}[Dict(&quot;deps&quot;=&gt;[&quot;Dates&quot;, &quot;EzXML&quot;, &quot;Mocking&quot;…
+  &quot;Documenter&quot;    =&gt; Dict{String,Any}[Dict(&quot;deps&quot;=&gt;[&quot;Base64&quot;, &quot;Dates&quot;, &quot;DocStri…
+  &quot;BSON&quot;          =&gt; Dict{String,Any}[Dict(&quot;git-tree-sha1&quot;=&gt;&quot;db18b5ea04686f73d2…
+  &quot;Test&quot;          =&gt; Dict{String,Any}[Dict(&quot;deps&quot;=&gt;[&quot;Distributed&quot;, &quot;Interactive…
+  &quot;Zlib_jll&quot;      =&gt; Dict{String,Any}[Dict(&quot;deps&quot;=&gt;[&quot;Artifacts&quot;, &quot;JLLWrappers&quot;,…
+  &quot;IOCapture&quot;     =&gt; Dict{String,Any}[Dict(&quot;deps&quot;=&gt;[&quot;Logging&quot;],&quot;git-tree-sha1&quot;=…
+  &quot;Random&quot;        =&gt; Dict{String,Any}[Dict(&quot;deps&quot;=&gt;[&quot;Serialization&quot;],&quot;uuid&quot;=&gt;&quot;9…
+  &quot;Libdl&quot;         =&gt; Dict{String,Any}[Dict(&quot;uuid&quot;=&gt;&quot;8f399da3-3557-5675-b5ff-fb8…
+  &quot;JLSO&quot;          =&gt; Dict{String,Any}[Dict(&quot;deps&quot;=&gt;[&quot;BSON&quot;, &quot;CodecZlib&quot;, &quot;FileP…
+  &quot;UUIDs&quot;         =&gt; Dict{String,Any}[Dict(&quot;deps&quot;=&gt;[&quot;Random&quot;, &quot;SHA&quot;],&quot;uuid&quot;=&gt;&quot;c…
+  &quot;Distributed&quot;   =&gt; Dict{String,Any}[Dict(&quot;deps&quot;=&gt;[&quot;Random&quot;, &quot;Serialization&quot;, …
+  &quot;Serialization&quot; =&gt; Dict{String,Any}[Dict(&quot;uuid&quot;=&gt;&quot;9e88b42a-f829-5b0c-bbe9-9e9…
+  &quot;SHA&quot;           =&gt; Dict{String,Any}[Dict(&quot;uuid&quot;=&gt;&quot;ea8e919c-243c-51af-8825-aaa…
+  &quot;REPL&quot;          =&gt; Dict{String,Any}[Dict(&quot;deps&quot;=&gt;[&quot;InteractiveUtils&quot;, &quot;Markdo…
+  &quot;Memento&quot;       =&gt; Dict{String,Any}[Dict(&quot;deps&quot;=&gt;[&quot;Dates&quot;, &quot;Distributed&quot;, &quot;JS…
+  &quot;Syslogs&quot;       =&gt; Dict{String,Any}[Dict(&quot;deps&quot;=&gt;[&quot;Printf&quot;, &quot;Sockets&quot;],&quot;git-t…
+  &quot;CodecZlib&quot;     =&gt; Dict{String,Any}[Dict(&quot;deps&quot;=&gt;[&quot;TranscodingStreams&quot;, &quot;Zlib…
+  ⋮               =&gt; ⋮</pre><p>These <code>project</code> and <code>manifest</code> fields are just the dictionary representations of the Project.toml and Manifest.toml files found in a Julia Pkg environment. As such, we can also use <code>Pkg.activate</code> to construct and environment matching that used to write the file.</p><pre><code class="language-julia">dir = joinpath(dirname(dirname(pathof(JLSO))), &quot;test&quot;, &quot;specimens&quot;)
+jlso = read(joinpath(dir, &quot;v4_bson_none.jlso&quot;), JLSOFile)
+jlso[:DataFrame]</code></pre><pre class="documenter-example-output">1355-element Array{UInt8,1}:
  0x4b
  0x05
  0x00
@@ -30,73 +39,7 @@ julia&gt; # Can&#39;t load some object in the current environment
  0x67
  0x00
  0x07
- 0x00
- 0x00
- 0x00
- 0x73
- 0x74
- 0x72
- 0x75
- 0x63
- 0x74
- 0x00
- 0x03
- 0x74
- 0x79
- 0x70
- 0x65
- 0x00
- 0x00
- 0x01
- 0x00
- 0x00
- 0x02
- 0x74
- 0x61
- 0x67
- 0x00
- 0x09
- 0x00
- 0x00
- 0x00
- 0x64
- 0x61
- 0x74
- 0x61
     ⋮
- 0x33
- 0x00
- 0x21
- 0x00
- 0x00
- 0x00
- 0x02
- 0x74
- 0x61
- 0x67
- 0x00
- 0x07
- 0x00
- 0x00
- 0x00
- 0x73
- 0x79
- 0x6d
- 0x62
- 0x6f
- 0x6c
- 0x00
- 0x02
- 0x6e
- 0x61
- 0x6d
- 0x65
- 0x00
- 0x02
- 0x00
- 0x00
- 0x00
- 0x64
  0x00
  0x00
  0x00
@@ -105,30 +48,21 @@ julia&gt; # Can&#39;t load some object in the current environment
  0x00
  0x00
  0x00
- 0x00
- 0x00
+ 0x00</pre><p>Unfortunately, we can&#39;t load some objects in the current environment, so we might try to load the offending package only to find out it isn&#39;t part of our current environment.</p><pre><code class="language-julia">try using DataFrames catch e @warn e end</code></pre><pre class="documenter-example-output">┌ Warning: ArgumentError(&quot;Package DataFrames not found in current path:\n- Run `import Pkg; Pkg.add(\&quot;DataFrames\&quot;)` to install the DataFrames package.\n&quot;)
+└ @ Main.ex-metadata-example none:1</pre><p>Okay, so we don&#39;t have DataFrames loaded and it isn&#39;t part of our current environment. Rather than adding every possible package needed to deserialize the objects in the file, we can use the <code>Pkg.activate</code> do-block syntax to:</p><ol><li>Initialize the exact environment needed to deserialize our objects</li><li>Load our desired dependencies</li><li>Migrate our data to a more appropriate long term format</li></ol><pre><code class="language-julia">using Pkg
 
-julia&gt; using DataFrames
-ERROR: ArgumentError: Package DataFrames not found in current path:
-- Run `import Pkg; Pkg.add(&quot;DataFrames&quot;)` to install the DataFrames package.
+# Now we can run our conversion logic in an isolated environment
+mktempdir(pwd()) do d
+    cd(d) do
+        # Modify our Manifest to just use the latest release of JLSO
+        delete!(jlso.manifest, &quot;JLSO&quot;)
 
-Stacktrace:
- [1] require(::Module, ::Symbol) at ./loading.jl:893
-
-julia&gt; # Specify a non-temp directory as the second argument if you want to reuse this environment across sessions.
-       Pkg.activate(jlso)
- Activating environment at `/var/folders/vz/zx_0gsp9291dhv049t_nx37r0000gn/T/Project.toml`
-
-julia&gt; # Load our object and perhaps inspect some properties about it
-       # Could also choose export it to a more transparent format
-       using DataFrames
-
-julia&gt; describe(jlso[:DataFrame])
-4×8 DataFrame
-│ Row │ variable │ mean     │ min      │ median   │ max      │ nunique │ nmissing │ eltype   │
-│     │ Symbol   │ Union…   │ Any      │ Union…   │ Any      │ Union…  │ Union…   │ DataType │
-├─────┼──────────┼──────────┼──────────┼──────────┼──────────┼─────────┼──────────┼──────────┤
-│ 1   │ a        │ 3.0      │ 1        │ 3.0      │ 5        │         │          │ Int64    │
-│ 2   │ b        │ 0.772432 │ 0.512452 │ 0.863122 │ 0.907903 │         │          │ Float64  │
-│ 3   │ c        │          │ a        │          │ e        │ 5       │ 0        │ Any      │
-│ 4   │ d        │ 0.6      │ 0        │ 1.0      │ 1        │         │          │ Bool     │</code></pre><p>In the future, we may add some tooling to make it easier to view and compare these dictionaries, but it&#39;s currently unclear if that should live here or in Pkg.jl.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Home</a><a class="docs-footer-nextpage" href="../upgrading/">Upgrading »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 19 February 2021 22:20">Friday 19 February 2021</span>. Using Julia version 1.5.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+        Pkg.activate(jlso, d) do
+            @eval Main begin
+                using Pkg; Pkg.resolve(); Pkg.instantiate(; verbose=true)
+                using DataFrames, JLSO
+                describe($(jlso)[:DataFrame])
+            end
+        end
+    end
+end</code></pre><table class="data-frame"><thead><tr><th></th><th>variable</th><th>mean</th><th>min</th><th>median</th><th>max</th><th>nunique</th><th>nmissing</th><th>eltype</th></tr><tr><th></th><th>Symbol</th><th>Union…</th><th>Any</th><th>Union…</th><th>Any</th><th>Union…</th><th>Union…</th><th>DataType</th></tr></thead><tbody><p>4 rows × 8 columns</p><tr><th>1</th><td>a</td><td>3.0</td><td>1</td><td>3.0</td><td>5</td><td></td><td></td><td>Int64</td></tr><tr><th>2</th><td>b</td><td>0.772432</td><td>0.512452</td><td>0.863122</td><td>0.907903</td><td></td><td></td><td>Float64</td></tr><tr><th>3</th><td>c</td><td></td><td>a</td><td></td><td>e</td><td>5</td><td>0</td><td>Any</td></tr><tr><th>4</th><td>d</td><td>0.6</td><td>0</td><td>1.0</td><td>1</td><td></td><td></td><td>Bool</td></tr></tbody></table><p>NOTE:</p><ul><li>Comparing <code>project</code> and <code>manifest</code> dictionaries isn&#39;t ideal, but it&#39;s currently unclear if that should live here or in Pkg.jl.</li><li>The <code>Pkg.activate</code> workflow could probably be replaced with a macro</li></ul></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Home</a><a class="docs-footer-nextpage" href="../upgrading/">Upgrading »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Tuesday 16 March 2021 05:38">Tuesday 16 March 2021</span>. Using Julia version 1.5.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
