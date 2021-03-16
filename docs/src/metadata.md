@@ -8,7 +8,7 @@ JLSO.save("breakfast.jlso", :food => "☕️🥓🍳", :cost => 11.95, :time => 
 Manually reading JLSO files can be helpful when addressing issues deserializing objects or to simply to help with reproducibility.
 
 ```@example metadata-example
-using JLSO;
+using JLSO
 
 jlso = read("breakfast.jlso", JLSOFile)
 ```
@@ -42,7 +42,7 @@ jlso = read(joinpath(dir, "v4_bson_none.jlso"), JLSOFile)
 jlso[:DataFrame]
 ```
 
-Unfortunately, we can't load some object in the current environment, so we might try to load the offending package only to find out it isn't part of our current environment.
+Unfortunately, we can't load some objects in the current environment, so we might try to load the offending package only to find out it isn't part of our current environment.
 ```@example metadata-example
 try using DataFrames catch e @warn e end
 ```
@@ -50,7 +50,7 @@ try using DataFrames catch e @warn e end
 Okay, so we don't have DataFrames loaded and it isn't part of our current environment.
 Rather than adding every possible package needed to deserialize the objects in the file, we can use the `Pkg.activate` do-block syntax to:
 
-1. Initial the extact environment needed to deserialize our objects
+1. Initialize the exact environment needed to deserialize our objects
 2. Load our desired dependencies
 3. Migrate our data to a more appropriate long term format
 
