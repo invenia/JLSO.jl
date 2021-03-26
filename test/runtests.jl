@@ -25,6 +25,6 @@ include("test_data_setup.jl")
     include("JLSOFile.jl")
     include("file_io.jl")
 
-    # Don't worry if our doctests don't match on different architectures or julia releases.
-    Sys.WORD_SIZE == 64 && VERSION >= v"1.5" && doctest(JLSO)
+    # The doctests fail on x86, so only run them on 64-bit hardware & Julia 1.5
+    Sys.WORD_SIZE == 64 && v"1.5" <= VERSION < v"1.6" && doctest(JLSO)
 end
