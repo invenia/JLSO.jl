@@ -105,7 +105,8 @@ end
 
 Creates a JLSOFile with the specified data and kwargs and writes it back to the io.
 """
-save(io::IO, data; kwargs...) = write(io, JLSOFile(data; kwargs...))
+save(io::IO, data::JLSOFile) = write(io, data)
+save(io::IO, data; kwargs...) = save(io, JLSOFile(data; kwargs...))
 save(io::IO, data::Pair...; kwargs...) = save(io, Dict(data...); kwargs...)
 function save(path::Union{AbstractPath, AbstractString}, args...; kwargs...)
     return open(io -> save(io, args...; kwargs...), path, "w")
