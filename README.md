@@ -8,26 +8,21 @@
 [![DOI](https://zenodo.org/badge/170755855.svg)](https://zenodo.org/badge/latestdoi/170755855)
 
 
-JLSO is a storage container for serialized Julia objects.
-Think of it less as a serialization format but as a container,
-that employs a serializer, and a compressor, handles all the other concerns including metadata and saving.
-Such that the serializer just needs to determine how to turn a julia object into a stream`Vector{UInt8}`,
-and the compressor just needs to determine how to turn one stream of `UInt8`s into a smaller one (and the reverse).
+JLSO is a storage container for serialized Julia objects.  
+JLSO is less of a serialization format and moreso a container which employs a serializer, a compressor, and handles all other concerns involving metadata and saving.  
+JLSOs serializer simply needs to determine how to turn a Julia object into a stream `Vector{UInt8}`, and the compressor simply needs to determine how to turn one stream of `UInt8`s into a smaller one or the reverse.
 
+In JLSO it's fast and efficient to load single objects out of a larger file containing many objects.  
+Objects represent data. 
+At the top-level is a BSON file which stores metadata about the host operating system environment as well as an arbitrary collection of objects.
+Depending on configuration metadata objects may be stored as BSON sub-documents, or using native Julia serialization formats with various levels of compression. 
+Serialization in Julia currently defaults to `gzip`.
 
-At the top-level it is a BSON file,
-where it stores metadata about the system it was created on as well as a collection of objects (the actual data).
-Depending on configuration, those objects may themselves be stored as BSON sub-documents,
-or in the native Julia serialization format (default), under various levels of compression (`gzip` default).
-It is fast and efficient to load just single objects out of a larger file that contains many objects.
+JLSO metadata stored in BSON without any Julia specific extensions includes: the Julia version and the versions of all packages installed.  
+Unfortunately this means one might accidentally install everything again and replicate their system. 
+Even harder problems will arise when using a BSON reader in another programming language.
 
-The metadata includes the Julia version and the versions of all packages installed.
-It is always store in plain BSON without julia specific extensions.
-This means in the worst case you can install everything again and replicate your system.
-(Extreme worst case scenario, using a BSON reader from another programming language).
-
-Note: If the amount of data you have to store is very small, relative to the metadata about your environment, then JLSO is a pretty suboptimal format.
-
+Note that if the amount of data you have to store is small relative to the metadata about your environment then JLSO is a suboptimal format.
 
 ## Example
 
