@@ -55,3 +55,27 @@ end
         @test Pkg.TOML.parsefile(joinpath(d, "Manifest.toml")) == jlso.manifest
     end
 end
+
+@testset "keys/haskey" begin
+    jlso = JLSOFile(:string => datas[:String])
+    @test collect(keys(jlso1)) == [:string]
+    @test haskey(jlso, :string)
+    @test !haskey(jlso, :other)
+end
+
+@testset "get/get!" begin
+    v = datas[:String]
+    jlso = JLSOFile(:str => v)
+    @test get(jlso, :str, "fail") == v
+    @test get!(jlso, :str, "fail") == v
+
+    @test get(jlso, :other, v) == v
+    @test !haskey(jlso, :other)
+
+    @test get!(jlso, :other, v) == v
+    @test jlso[:other] == v
+
+    # key must be a Symbol
+    @test get(jlso, "str", 999) == 999
+    @test_throws MethodError get!(jlso, "str", 999)
+end
