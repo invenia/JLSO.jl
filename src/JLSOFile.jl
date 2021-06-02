@@ -75,8 +75,9 @@ function JLSOFile(;
     image=_image(),
     kwargs...
 )
+    data = isempty(kwargs) ? Dict{Symbol,Any}() : Dict(kwargs)
     return JLSOFile(
-        Dict(kwargs);
+        data;
         version=version,
         julia=julia,
         format=format,
@@ -117,3 +118,18 @@ function Base.:(==)(a::JLSOFile, b::JLSOFile)
 end
 
 Base.names(jlso::JLSOFile) = collect(keys(jlso.objects))
+
+Base.keys(jlso::JLSOFile) = keys(jlso.objects)
+
+Base.haskey(jlso::JLSOFile, key) = haskey(jlso.objects, key)
+
+Base.get(jlso::JLSOFile, key, default) = haskey(jlso, key) ? jlso[key] : default
+
+Base.get!(jlso::JLSOFile, key, default) = get!(() -> default, jlso, key)
+function Base.get!(func, jlso::JLSOFile, key)
+    return if haskey(jlso, key)
+        jlso[key]
+    else
+        jlso[key] = func()
+    end
+end
