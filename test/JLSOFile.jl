@@ -65,7 +65,7 @@ end
 
 @testset "keys/haskey" begin
     jlso = JLSOFile(:string => datas[:String])
-    @test collect(keys(jlso1)) == [:string]
+    @test collect(keys(jlso)) == [:string]
     @test haskey(jlso, :string)
     @test !haskey(jlso, :other)
 end
