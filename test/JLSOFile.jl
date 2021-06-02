@@ -22,6 +22,13 @@
         @test jlso[:b] == "hello"
         @test haskey(jlso.manifest, "BSON")
     end
+
+    @testset "no-arg constructor" begin
+        jlso = JLSOFile()
+        @test jlso isa JLSOFile
+        @test isempty(jlso.objects)
+        @test haskey(jlso.manifest, "BSON")
+    end
 end
 
 @testset "unknown format" begin

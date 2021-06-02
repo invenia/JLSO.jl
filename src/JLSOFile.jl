@@ -75,8 +75,9 @@ function JLSOFile(;
     image=_image(),
     kwargs...
 )
+    data = isempty(kwargs) ? Dict{Symbol,Any}() : Dict(kwargs)
     return JLSOFile(
-        Dict(kwargs);
+        data;
         version=version,
         julia=julia,
         format=format,
