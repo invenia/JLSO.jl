@@ -7,27 +7,33 @@
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 [![DOI](https://zenodo.org/badge/170755855.svg)](https://zenodo.org/badge/latestdoi/170755855)
 
-
 JLSO is a storage container for serialized Julia objects.
-Think of it less as a serialization format but as a container,
-that employs a serializer, and a compressor, handles all the other concerns including metadata and saving.
-Such that the serializer just needs to determine how to turn a julia object into a stream`Vector{UInt8}`,
-and the compressor just needs to determine how to turn one stream of `UInt8`s into a smaller one (and the reverse).
+Think of it less as a serialization format and more of a container for arbitrarily serialized objects and metadata.
+The modular structure of the JLSO container files allows users to balance their specific performance, flexibility and reliability requirements.
 
+A JLSO file contains two primary components:
 
-At the top-level it is a BSON file,
-where it stores metadata about the system it was created on as well as a collection of objects (the actual data).
-Depending on configuration, those objects may themselves be stored as BSON sub-documents,
-or in the native Julia serialization format (default), under various levels of compression (`gzip` default).
-It is fast and efficient to load just single objects out of a larger file that contains many objects.
+1. [BSON](https://bsonspec.org/spec.html) formatted metadata about the host operating system and environment
+2. An arbitrary collection of serialized objects
 
-The metadata includes the Julia version and the versions of all packages installed.
-It is always store in plain BSON without julia specific extensions.
-This means in the worst case you can install everything again and replicate your system.
-(Extreme worst case scenario, using a BSON reader from another programming language).
+While the metadata is specific to the JLSO file format, various serializers and compressors can be employed when saving objects.
+The serializer needs to determine how to turn a Julia object into a stream (`Vector{UInt8}`), while the compressor needs to choose how to convert one stream of `UInt8`s into a smaller one or the reverse.
+Depending on the configuration metadata, objects may be stored as [BSON sub-documents](https://bsonspec.org/spec.html) or [Julia serialized](https://docs.julialang.org/en/v1/stdlib/Serialization/) types, using various compression methods.
+JLSO currently defaults to [Julia serialization](https://docs.julialang.org/en/v1/stdlib/Serialization/) with [`gzip`](https://github.com/JuliaIO/CodecZlib.jl).
 
-Note: If the amount of data you have to store is very small, relative to the metadata about your environment, then JLSO is a pretty suboptimal format.
+Currently, JLSO files store the following metadata:
 
+- JLSO version number
+- Julia version number
+- Serialization format (e.g., "julia_serialize", "bson")
+- Compression method like "gzip"
+- A docker image URI
+- Project.toml
+- Manifest.toml (possibly compressed)
+
+This information makes it possible to reconstruct the original environment necessary to deserialize the objects if the internal serialization format has introduced breaking changes.
+Since the metadata is formatted in language-agnostic BSON (no Julia extensions), all you need is a BSON reader.
+Due to the size of this metadata, JLSO files are not ideal for storing many small files.
 
 ## Example
 
