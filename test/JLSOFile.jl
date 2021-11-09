@@ -32,13 +32,8 @@
 end
 
 @testset "unknown format" begin
-    @test_throws(
-        LOGGER,
-        MethodError,
-        JLSOFile("String" => "Hello World!", format=:unknown)
-    )
+    @test_throws MethodError JLSOFile("String" => "Hello World!", format=:unknown)
 end
-
 @testset "show" begin
     jlso = JLSOFile(:string => datas[:String])
     expected = string(

@@ -61,7 +61,7 @@
         @testset "$fn" for fn in readdir(dir)
             if Int === Int32 && occursin("_serialize", fn)
                 # Julia 64-bit serializations won't load on 32-bit systems
-                @test_warn(JLSO.LOGGER, r"MethodError*", JLSO.load(joinpath(dir, fn)))
+                @test_logs (:warn, "MethodError") JLSO.load(joinpath(dir, fn))
             else
                 jlso_data = @suppress_out JLSO.load(joinpath(dir, fn))
                 @test jlso_data == datas
@@ -81,7 +81,7 @@
 
                     if Int === Int32 && occursin("_serialize", fn)
                         # Julia 64-bit serializations won't load on 32-bit systems
-                        @test_warn(JLSO.LOGGER, r"MethodError*", JLSO.load(dest))
+                        @test_logs (:warn, "MethodError") JLSO.load(dest)
                     else
                         jlso_data = JLSO.load(dest)
                         @test jlso_data == datas

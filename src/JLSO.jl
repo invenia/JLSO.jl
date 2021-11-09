@@ -38,7 +38,6 @@ module JLSO
 using BSON
 using CodecZlib
 using FilePathsBase: AbstractPath
-using Memento
 using Pkg: Pkg
 using Pkg.Types: semver_spec
 using Serialization
@@ -59,8 +58,6 @@ export JLSOFile
 const READABLE_VERSIONS = semver_spec("1, 2, 3, 4")
 const WRITEABLE_VERSIONS = semver_spec("3, 4")
 
-const LOGGER = getlogger(@__MODULE__)
-__init__() = Memento.register(LOGGER)
 
 include("JLSOFile.jl")
 include("upgrade.jl")

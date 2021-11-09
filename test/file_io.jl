@@ -42,12 +42,7 @@ end
 
         # Test failing to deserialize data because of incompatible julia versions
         # will return the raw bytes
-        result = if VERSION < v"1.2"
-            @test_warn(LOGGER, r"MethodError*", jlso[:data])
-        else
-            @test_warn(LOGGER, r"TypeError*", jlso[:data])
-        end
-
+        result = @test_logs (:warn,) jlso[:data]
         @test result == hw_5
 
         # TODO: Test that BSON works across julia versions using external files?
@@ -100,7 +95,7 @@ end
 
                 # Test failing to deserailize data because of missing modules will
                 # still return the raw bytes
-                result = @test_warn(LOGGER, r"KeyError*", jlso[:data])
+                result = @test_logs (:warn,) jlso[:data]
                 @test result == bytes
             end
 
@@ -137,7 +132,7 @@ end
 
                 # Test failing to deserailize data because of missing modules will
                 # still return the raw bytes
-                result = @test_warn(LOGGER, r"UndefVarError*", jlso[:data])
+                result = @test_logs (:warn,) jlso[:data]
 
                 @test result == bytes
             end
@@ -165,7 +160,6 @@ end
     end
     @testset "keys are not Symbols" begin
         @test_throws(
-            getlogger(JLSO),
             MethodError,
             JLSO.save("breakfast.jlso", "food" => "☕️🥓🍳", "time" => Time(9, 0)),
         )

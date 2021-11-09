@@ -16,13 +16,13 @@ upgrade step. Won't be needed once the v2 file format is dropped.
     The project generated is accurate, except for duplicated names (no UUID) and custom branchs.
 """
 function upgrade(src, dest)
-    info(LOGGER, "Upgrading $src -> $dest")
+    @info "Upgrading" src dest
     jlso = open(io -> read(io, JLSOFile), src)
     write(dest, jlso)
 end
 
 function upgrade(src, dest, project, manifest)
-    info(LOGGER, "Upgrading $src -> $dest")
+    @info "Upgrading" src dest
     parsed = BSON.load(string(src))
     haskey(parsed["metadata"], "pkgs") && empty!(parsed["metadata"]["pkgs"])
     d = upgrade_jlso(parsed)
@@ -81,7 +81,7 @@ version_number(x::String) = VersionNumber(x)
 
 # Metadata changes to upgrade file from v1 to v2
 function upgrade_jlso(raw_dict::AbstractDict, ::Val{1})
-    info(LOGGER, "Upgrading JLSO format from v1 to v2")
+    @info "Upgrading JLSO format from v1 to v2"
     metadata = copy(raw_dict["metadata"])
     version = version_number(metadata["version"])
     @assert version ∈ semver_spec("1")
@@ -98,7 +98,7 @@ end
 
 # Metadata changes to upgrade from v2 to v3
 function upgrade_jlso(raw_dict::AbstractDict, ::Val{2})
-    info(LOGGER, "Upgrading JLSO format from v2 to v3")
+    @info "Upgrading JLSO format from v2 to v3"
     metadata = copy(raw_dict["metadata"])
     version = version_number(metadata["version"])
     @assert version ∈ semver_spec("2")
@@ -154,10 +154,12 @@ function _upgrade_env(pkgs::Dict{String, VersionNumber})
             catch e
                 # Warn about failure and fallback to simply trying to install the pacakges
                 # without version constraints.
-                warn(LOGGER) do
+                @warn(
                     "Failed to construct an environment with the provide package version " *
-                    "($pkgs): $e.\n Falling back to simply adding the packages."
-                end
+                    "\nFalling back to simply adding the packages.",
+                    pkgs,
+                    exception=e
+                )
                 Pkg.add([Pkg.PackageSpec(; name=key) for (key, value) in pkgs])
             end
 

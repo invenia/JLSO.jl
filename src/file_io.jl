@@ -82,7 +82,7 @@ function Base.read(io::IO, ::Type{JLSOFile})
             )
         )
     catch e
-        warn(LOGGER, e)
+        @warn exception=e
         Dict("raw" => d["metadata"]["manifest"])
     end
 

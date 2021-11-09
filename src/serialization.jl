@@ -53,7 +53,7 @@ function getindex(jlso::JLSOFile, name::Symbol)
         decompressing_buffer = decompress(jlso.compression, buffer)
         return deserialize(jlso.format, decompressing_buffer)
     catch e
-        warn(LOGGER, e)
+        @warn exception=e
         return jlso.objects[name]
     end
 end
