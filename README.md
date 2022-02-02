@@ -28,7 +28,7 @@ This means in the worst case you can install everything again and replicate your
 
 Note: If the amount of data you have to store is very small, relative to the metadata about your environment, then JLSO is a pretty suboptimal format.
 As a rule of thumb, consider the size of your Project.toml and Manifest.toml files.
-If the data you are storing is large compared to the size (compressed) of these files, then it is fine to use JLSO.
+If the data you are storing is large compared to the compressed size of these files, then it is fine to use JLSO.
 
 
 ## Example
