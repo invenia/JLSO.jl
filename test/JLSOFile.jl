@@ -20,14 +20,22 @@
     @testset "kwarg constructor" begin
         jlso = JLSOFile(; a=collect(1:10), b="hello")
         @test jlso[:b] == "hello"
-        @test haskey(jlso.manifest, "BSON")
+        if VERSION < v"1.7"
+            @test haskey(jlso.manifest, "BSON")
+        else
+            @test haskey(jlso.manifest["deps"], "BSON")
+        end
     end
 
     @testset "no-arg constructor" begin
         jlso = JLSOFile()
         @test jlso isa JLSOFile
         @test isempty(jlso.objects)
-        @test haskey(jlso.manifest, "BSON")
+        if VERSION < v"1.7"
+            @test haskey(jlso.manifest, "BSON")
+        else
+            @test haskey(jlso.manifest["deps"], "BSON")
+        end
     end
 end
 
