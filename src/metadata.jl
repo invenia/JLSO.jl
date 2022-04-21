@@ -20,7 +20,7 @@ const _CACHE = Dict(
     :IMAGE => "",
 )
 
-# Make sure _CACHE thread-safe
+# Make sure _CACHE access is thread-safe
 const _CACHE_LOCK = ReentrantLock()
 
 function _pkgs()
