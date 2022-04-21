@@ -20,12 +20,17 @@ const _CACHE = Dict(
     :IMAGE => "",
 )
 
+# Make sure _CACHE thread-safe
+const _CACHE_LOCK = ReentrantLock()
+
 function _pkgs()
-    if isempty(_CACHE[:PKGS])
-        for (pkg, ver) in Pkg.installed()
-            # BSON can't handle Void types
-            if ver !== nothing
-                global _CACHE[:PKGS][pkg] = ver
+    lock(_CACHE_LOCK) do
+        if isempty(_CACHE[:PKGS])
+            for (pkg, ver) in Pkg.installed()
+                # BSON can't handle Void types
+                if ver !== nothing
+                    global _CACHE[:PKGS][pkg] = ver
+                end
             end
         end
     end
@@ -34,12 +39,14 @@ function _pkgs()
 end
 
 function _env()
-    if isempty(_CACHE[:PROJECT]) && isempty(_CACHE[:MANIFEST])
-        _CACHE[:PROJECT] = read(Base.active_project(), String)
-        _CACHE[:MANIFEST] = read(
-            joinpath(dirname(Base.active_project()), "Manifest.toml"),
-            String
-        )
+    lock(_CACHE_LOCK) do
+        if isempty(_CACHE[:PROJECT]) && isempty(_CACHE[:MANIFEST])
+            _CACHE[:PROJECT] = read(Base.active_project(), String)
+            _CACHE[:MANIFEST] = read(
+                joinpath(dirname(Base.active_project()), "Manifest.toml"),
+                String
+            )
+        end
     end
 
     return (_CACHE[:PROJECT], _CACHE[:MANIFEST])
