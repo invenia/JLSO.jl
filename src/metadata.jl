@@ -33,9 +33,9 @@ function _pkgs()
                 end
             end
         end
-    end
 
-    return _CACHE[:PKGS]
+        return _CACHE[:PKGS]
+    end
 end
 
 function _env()
@@ -47,9 +47,9 @@ function _env()
                 String
             )
         end
-    end
 
-    return (_CACHE[:PROJECT], _CACHE[:MANIFEST])
+        return (_CACHE[:PROJECT], _CACHE[:MANIFEST])
+    end
 end
 
 function _image()
