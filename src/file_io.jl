@@ -119,8 +119,11 @@ end
 Load the JLSOFile from the io and deserialize the specified objects.
 If no object names are specified then all objects in the file are returned.
 """
-load(path::Union{AbstractPath, AbstractString}, args...) = open(io -> load(io, args...), path)
-function load(io::IO, objects::Symbol...)
+function load(path::Union{AbstractPath, AbstractString}, args...; kwargs...)
+    open(io -> load(io, args...; kwargs...), path)
+end
+
+function load(io::IO, objects::Symbol...; kwargs...)
     jlso = read(io, JLSOFile)
     objects = isempty(objects) ? names(jlso) : objects
     result = Dict{Symbol, Any}()
@@ -128,7 +131,7 @@ function load(io::IO, objects::Symbol...)
     @sync for o in objects
         @spawn begin
             # Note that calling getindex on the jlso triggers the deserialization of the object
-            deserialized = jlso[o]
+            deserialized = getindex(jlso, o; kwargs...)
             lock(jlso.lock) do
                 result[o] = deserialized
             end
